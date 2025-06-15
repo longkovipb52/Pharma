@@ -1,0 +1,324 @@
+﻿@model PharmaPlus.Models.AdminOrderDetailsViewModel
+@{
+    ViewBag.Title = "Chi tiết đơn hàng";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    Response.ContentEncoding = System.Text.Encoding.UTF8;
+    Response.Charset = "utf-8";
+}
+
+<div class="admin-order-details">
+    <div class="back-link">
+        <a href="@Url.Action("Index")" class="btn btn-link">
+            <i class="fas fa-arrow-left"></i> Quay lại danh sách
+        </a>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between">
+            <h1 class="card-title">
+                Chi tiết đơn hàng #@Model.Id
+                <span class="@Model.StatusClass order-status">@Model.Status</span>
+            </h1>
+            <div class="header-actions">
+                <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-primary">
+                    <i class="fas fa-edit"></i> Cập nhật trạng thái
+                </a>
+                
+                @if (!Model.IsPaid)
+                {
+                    using (Html.BeginForm("MarkAsPaid", "AdminOrders", new { id = Model.Id }, FormMethod.Post, new { style = "display:inline;" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-success" onclick="return confirm('Xác nhận đơn hàng đã thanh toán?')">
+                            <i class="fas fa-check"></i> Đánh dấu đã thanh toán
+                        </button>
+                    }
+                }
+                
+                @if (Model.Status != "Đã hủy" && Model.Status != "Hoàn thành")
+                {
+                    using (Html.BeginForm("Cancel", "AdminOrders", new { id = Model.Id }, FormMethod.Post, new { style = "display:inline;" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')">
+                            <i class="fas fa-times"></i> Hủy đơn hàng
+                        </button>
+                    }
+                }
+            </div>
+        </div>
+        
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="info-section">
+                        <h3 class="section-title">Thông tin đơn hàng</h3>
+                        <div class="info-group">
+                            <div class="info-item">
+                                <span class="info-label">Mã đơn hàng:</span>
+                                <span class="info-value">#@Model.Id</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Ngày đặt hàng:</span>
+                                <span class="info-value">@Model.FormattedCreatedAt</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Trạng thái:</span>
+                                <span class="info-value"><span class="@Model.StatusClass">@Model.Status</span></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Tổng tiền:</span>
+                                <span class="info-value total-price">@Model.FormattedTotalPrice</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="info-section">
+                        <h3 class="section-title">Thông tin thanh toán</h3>
+                        <div class="info-group">
+                            <div class="info-item">
+                                <span class="info-label">Phương thức thanh toán:</span>
+                                <span class="info-value">@Model.PaymentMethod</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Trạng thái thanh toán:</span>
+                                <span class="info-value"><span class="@Model.PaymentStatusClass">@Model.PaymentStatusText</span></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Ngày thanh toán:</span>
+                                <span class="info-value">@Model.FormattedPaidAt</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Số tiền thanh toán:</span>
+                                <span class="info-value">@Model.FormattedTotalPrice</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="info-section">
+                        <h3 class="section-title">Thông tin khách hàng</h3>
+                        <div class="info-group">
+                            <div class="info-item">
+                                <span class="info-label">Tên khách hàng:</span>
+                                <span class="info-value">@Model.CustomerName</span>
+                            </div>
+                            @if (!string.IsNullOrEmpty(Model.CustomerEmail))
+                            {
+                                <div class="info-item">
+                                    <span class="info-label">Email:</span>
+                                    <span class="info-value">@Model.CustomerEmail</span>
+                                </div>
+                            }
+                            @if (Model.CustomerId.HasValue)
+                            {
+                                <div class="info-item">
+                                    <span class="info-label">ID khách hàng:</span>
+                                    <span class="info-value">
+                                        <a href="@Url.Action("Details", "AdminUsers", new { id = Model.CustomerId })">#@Model.CustomerId</a>
+                                    </span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="info-section">
+                        <h3 class="section-title">Thông tin giao hàng</h3>
+                        <div class="info-group">
+                            <div class="info-item">
+                                <span class="info-label">Tên người nhận:</span>
+                                <span class="info-value">@Model.RecipientName</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Số điện thoại:</span>
+                                <span class="info-value">@Model.RecipientPhone</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Địa chỉ giao hàng:</span>
+                                <span class="info-value">@Model.ShippingAddress</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="order-items mt-4">
+                <h3 class="section-title">Chi tiết sản phẩm</h3>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th>Đơn giá</th>
+                                <th>Số lượng</th>
+                                <th>Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.OrderItems)
+                            {
+                                <tr>
+                                    <td class="product-col">
+                                        @if (!string.IsNullOrEmpty(item.ProductImage))
+                                        {
+                                            <img src="@Url.Content("~/images/products/" + item.ProductImage)" alt="@item.ProductName" class="product-thumbnail" />
+                                        }
+                                        else
+                                        {
+                                            <div class="no-image"><i class="fas fa-box"></i></div>
+                                        }
+                                        <div class="product-info">
+                                            <div class="product-name">
+                                                <a href="@Url.Action("Details", "AdminProducts", new { id = item.ProductId })">@item.ProductName</a>
+                                            </div>
+                                            <div class="product-id">Mã SP: #@item.ProductId</div>
+                                        </div>
+                                    </td>
+                                    <td>@item.FormattedUnitPrice</td>
+                                    <td>@item.Quantity</td>
+                                    <td>@item.FormattedSubTotal</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="order-total">
+                                <td colspan="3" class="text-end">Tổng cộng:</td>
+                                <td>@Model.FormattedTotalPrice</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section styles {
+    <style>
+        .admin-order-details {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .back-link {
+            margin-bottom: 15px;
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-title {
+            margin-bottom: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .order-status {
+            margin-left: 10px;
+            font-size: 0.875rem;
+        }
+        
+        .header-actions .btn {
+            margin-left: 10px;
+        }
+        
+        .section-title {
+            border-bottom: 1px solid #e3e6f0;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .info-group {
+            background-color: #f8f9fc;
+            border-radius: 5px;
+            padding: 15px;
+        }
+        
+        .info-item {
+            margin-bottom: 10px;
+            display: flex;
+        }
+        
+        .info-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            width: 150px;
+            color: #333;
+        }
+        
+        .info-value {
+            flex: 1;
+        }
+        
+        .total-price {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+        
+        .badge {
+            padding: 0.25em 0.6em;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 0.35rem;
+        }
+        
+        .product-col {
+            display: flex;
+            align-items: center;
+        }
+        
+        .product-thumbnail {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-right: 15px;
+        }
+        
+        .no-image {
+            width: 50px;
+            height: 50px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #aaa;
+            margin-right: 15px;
+        }
+        
+        .product-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .product-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .product-id {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        
+        .order-total {
+            font-weight: 700;
+        }
+    </style>
+}

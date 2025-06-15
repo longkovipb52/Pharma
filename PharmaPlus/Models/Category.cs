@@ -1,0 +1,21 @@
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace PharmaPlus.Models
+{
+    [Table("Category")]
+    public class Category
+    {
+        [Key]
+        public int id { get; set; }
+
+        [Required]
+        [StringLength(100)]
+        public string name { get; set; }
+
+        public string description { get; set; }
+
+        public virtual ICollection<Product> Products { get; set; }
+    }
+}

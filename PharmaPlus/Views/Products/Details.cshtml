@@ -1,0 +1,86 @@
+<!-- filepath: c:\PharmaPlus\PharmaPlus\Views\Products\Details.cshtml -->
+@model PharmaPlus.Models.ProductDetailViewModel
+@{
+    ViewBag.Title = Model.Name + " - PharmaPlus";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="product-detail-page">
+    <div class="container">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="breadcrumb-container">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Products")">Sản phẩm</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Products", new { category = Model.CategoryId })">@Model.CategoryName</a></li>
+                <li class="breadcrumb-item active">@Model.Name</li>
+            </ol>
+        </nav>
+
+        <!-- Thông báo -->
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle"></i>
+                <span>@TempData["SuccessMessage"]</span>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle"></i>
+                <span>@TempData["ErrorMessage"]</span>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
+
+        <!-- Chi tiết sản phẩm -->
+        <div class="product-detail-card">
+            <div class="row">
+                <!-- Hình ảnh sản phẩm -->
+                <div class="col-md-5">
+                    <div class="product-image-container">
+                        <img src="@Model.ImageUrl" alt="@Model.Name" class="product-detail-image">
+                        @if (Model.PrescriptionRequired)
+                        {
+                            <div class="prescription-badge">
+                                <i class="fas fa-prescription"></i> Thuốc kê đơn
+                            </div>
+                        }
+                    </div>
+                </div>
+                <!-- Thông tin sản phẩm -->
+                <div class="col-md-7">
+                    <div class="product-detail-info">
+                        <h1 class="product-detail-title">@Model.Name</h1>
+                        
+                        <!-- Đánh giá và thông tin khác -->
+                        <div class="product-detail-meta">
+                            <!-- Nội dung đã được rút gọn -->
+                        </div>
+                        
+                        <!-- Giá và các thông tin khác -->
+                        <!-- Nội dung đã được rút gọn -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sản phẩm liên quan và nội dung khác -->
+        <!-- Nội dung đã được rút gọn -->
+    </div>
+</div>
+
+@section styles {
+    <link href="~/Content/css/product-detail-style.css" rel="stylesheet" />
+}
+
+@section scripts {
+    <script src="~/Scripts/js/product-detail-script.js"></script>
+}

@@ -1,0 +1,62 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using System.Web.Optimization;
+using System.Web.Routing;
+using System.Diagnostics;
+using PharmaPlus.Models;
+
+namespace PharmaPlus
+{
+    public class MvcApplication : System.Web.HttpApplication
+    {
+        protected void Application_Start()
+        {
+            AreaRegistration.RegisterAllAreas();
+            FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
+            RouteConfig.RegisterRoutes(RouteTable.Routes);
+            BundleConfig.RegisterBundles(BundleTable.Bundles);
+            
+            // Kiểm tra kết nối đến cơ sở dữ liệu khi ứng dụng khởi động
+            TestDbConnection();
+        }
+        
+        private void TestDbConnection()
+        {
+            try
+            {
+                using (var db = new PharmaContext())
+                {
+                    // Kiểm tra xem cơ sở dữ liệu có tồn tại không
+                    bool dbExists = db.Database.Exists();
+                    
+                    // Log kết quả
+                    if (dbExists)
+                    {
+                        Debug.WriteLine("✅ Kết nối cơ sở dữ liệu thành công!");
+                        // Thử đếm số lượng bản ghi trong các bảng
+                        int userCount = db.Users.Count();
+                        int productCount = db.Products.Count();
+                        Debug.WriteLine($"   - Số lượng người dùng: {userCount}");
+                        Debug.WriteLine($"   - Số lượng sản phẩm: {productCount}");
+                    }
+                    else
+                    {
+                        Debug.WriteLine("❌ Cơ sở dữ liệu không tồn tại hoặc không thể kết nối!");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("❌ Lỗi kết nối cơ sở dữ liệu:");
+                Debug.WriteLine($"   - {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    Debug.WriteLine($"   - Chi tiết: {ex.InnerException.Message}");
+                }
+            }
+        }
+    }
+}

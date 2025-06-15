@@ -1,0 +1,93 @@
+﻿<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <div class="footer-brand">
+                    <i class="fas fa-pills"></i>
+                    <span>PharmaPlus</span>
+                </div>
+                <p>Nhà thuốc trực tuyến đáng tin cậy với thuốc kê đơn và sản phẩm chăm sóc sức khỏe.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Mua sắm</h3>
+                <ul>
+                    <li><a href="#">Tất cả sản phẩm</a></li>
+                    <li><a href="#">Danh mục</a></li>
+                    <li><a href="#">Thuốc kê đơn</a></li>
+                    <li><a href="#">Ưu đãi đặc biệt</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Tài khoản</h3>
+                <ul>
+                    <li><a href="/Account/Profile">Tài khoản của tôi</a></li>
+                    <li><a href="/Account/Orders">Lịch sử đơn hàng</a></li>
+                    <li><a href="#">Tải đơn thuốc</a></li>
+                    <li><a href="#">Sản phẩm yêu thích</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Hỗ trợ</h3>
+                <ul>
+                    <li><a href="/Home/Contact">Liên hệ</a></li>
+                    <li><a href="#">Câu hỏi thường gặp</a></li>
+                    <li><a href="#">Thông tin giao hàng</a></li>
+                    <li><a href="#">Chính sách đổi trả</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 PharmaPlus. Tất cả quyền được bảo lưu.</p>
+            <div class="footer-links">
+                <a href="#">Chính sách bảo mật</a>
+                <a href="#">Điều khoản dịch vụ</a>
+                <a href="#">Chính sách cookie</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Hiệu ứng scroll reveal cho footer
+    const footerSections = document.querySelectorAll('.footer-section');
+    
+    const observer = new IntersectionObserver(
+        entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                    observer.unobserve(entry.target);
+                }
+            });
+        },
+        {
+            threshold: 0.1
+        }
+    );
+    
+    footerSections.forEach(section => {
+        observer.observe(section);
+    });
+    
+    // Hiệu ứng hover cho social media icons
+    const socialLinks = document.querySelectorAll('.social-links a');
+    socialLinks.forEach(link => {
+        link.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-3px) rotate(8deg)';
+        });
+        
+        link.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) rotate(0)';
+        });
+    });
+});
+</script>

@@ -1,0 +1,254 @@
+﻿@model PharmaPlus.Models.OrderDetailViewModel
+@{
+    ViewBag.Title = "Chi tiết đơn hàng #" + Model.OrderCode;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    Response.ContentEncoding = System.Text.Encoding.UTF8;
+    Response.Charset = "utf-8";
+}
+
+<div class="order-detail-page">
+    <div class="container">
+        <div class="page-header">
+            <div class="page-header-left">
+                <a href="@Url.Action("Index", "OrderHistory")" class="back-link">
+                    <i class="fas fa-arrow-left"></i> Quay lại đơn hàng
+                </a>
+                <h1 class="page-title">Chi tiết đơn hàng #@Model.OrderCode</h1>
+            </div>
+            <div class="page-header-right">
+                <div class="order-status-badge status-@Model.StatusCode">
+                    <span class="status-dot"></span>
+                    <span class="status-text">@Model.Status</span>
+                </div>
+            </div>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle"></i>
+                <span>@TempData["SuccessMessage"]</span>
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle"></i>
+                <span>@TempData["ErrorMessage"]</span>
+            </div>
+        }
+
+        <div class="order-detail-grid">
+            <!-- Order Info Section -->
+            <div class="order-info-section info-card">
+                <h2 class="info-title">Thông tin đơn hàng</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Mã đơn hàng:</span>
+                        <span class="info-value">@Model.OrderCode</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Ngày đặt:</span>
+                        <span class="info-value">@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Trạng thái:</span>
+                        <span class="info-value status-@Model.StatusCode">@Model.Status</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Phương thức thanh toán:</span>
+                        <span class="info-value">@Model.PaymentMethod</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shipping Info Section -->
+            <div class="shipping-info-section info-card">
+                <h2 class="info-title">Thông tin giao hàng</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Người nhận:</span>
+                        <span class="info-value">@Model.RecipientName</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Số điện thoại:</span>
+                        <span class="info-value">@Model.RecipientPhone</span>
+                    </div>
+                    <div class="info-item full-width">
+                        <span class="info-label">Địa chỉ giao hàng:</span>
+                        <span class="info-value">@Model.ShippingAddress</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Section -->
+            <div class="products-section info-card full-width">
+                <h2 class="info-title">Sản phẩm đã đặt</h2>
+                <div class="table-responsive">
+                    <table class="order-products-table">
+                        <thead>
+                            <tr>
+                                <th class="product-col">Sản phẩm</th>
+                                <th class="price-col">Đơn giá</th>
+                                <th class="qty-col">Số lượng</th>
+                                <th class="subtotal-col">Thành tiền</th>
+                                <th class="actions-col">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Items)
+                            {
+                                <tr>
+                                    <td class="product-cell">
+                                        <div class="product-image">
+                                            <img src="@item.ProductImage" alt="@item.ProductName" onerror="this.onerror=null; this.src='/images/no-image.png';" />
+                                        </div>
+                                        <div class="product-details">
+                                            <a href="@Url.Action("Details", "Products", new { id = item.ProductId })" class="product-name">@item.ProductName</a>
+                                        </div>
+                                    </td>
+                                    <td class="price-cell">@string.Format("{0:#,##0}", item.UnitPrice) đ</td>
+                                    <td class="qty-cell">@item.Quantity</td>
+                                    <td class="subtotal-cell">@string.Format("{0:#,##0}", item.Subtotal) đ</td>
+                                    <td class="actions-cell">
+                                        <!-- Sửa đoạn code hiển thị nút đánh giá, thêm trạng thái "Đã hoàn thành" -->
+                                        @if (Model.Status == "Đã giao" || Model.Status == "Đã hủy" || Model.Status == "Hoàn thành")
+                                        {
+                                            if (item.HasReviewed)
+                                            {
+                                                <a href="@Url.Action("History", "Review")" 
+                                                   class="btn-reviewed"
+                                                   title="Xem đánh giá của bạn">
+                                                    <i class="fas fa-check-circle"></i>
+                                                    <span>Đã đánh giá (@item.UserRating <i class="fas fa-star"></i>)</span>
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <!-- Dùng đường dẫn tĩnh với giá trị trực tiếp từ model -->
+                                                <a href="/Review/Create?productId=@(item.ProductId)&orderId=@Model.Id" 
+                                                   class="btn-review">
+                                                    <i class="fas fa-star"></i>
+                                                    <span>Đánh giá</span>
+                                                </a>
+                                            }
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Order Timeline -->
+            <div class="timeline-section info-card full-width">
+                <h2 class="info-title">Lịch sử đơn hàng</h2>
+                <div class="timeline">
+                    @if (Model.StatusHistory != null && Model.StatusHistory.Any())
+                    {
+                        foreach (var status in Model.StatusHistory)
+                        {
+                            <div class="timeline-item">
+                                <div class="timeline-marker"></div>
+                                <div class="timeline-content">
+                                    <h3 class="timeline-title">@status.Status</h3>
+                                    <p class="timeline-date">@status.Date.ToString("dd/MM/yyyy HH:mm")</p>
+                                    <p class="timeline-note">@status.Note</p>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="no-timeline-data">
+                            <p>Chưa có thông tin cập nhật về lịch sử đơn hàng này.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Actions Section -->
+            <div class="actions-section">
+                @if (Model.CanCancel)
+                {
+                    <button type="button" class="btn-cancel-order" data-toggle="modal" data-target="#cancelOrderModal" data-order-id="@Model.Id">
+                        <i class="fas fa-times-circle"></i>
+                        <span>Hủy đơn hàng</span>
+                    </button>
+                }
+
+                <a href="@Url.Action("Index", "Products")" class="btn-primary">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Tiếp tục mua sắm</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal xác nhận hủy đơn hàng -->
+<div class="modal fade" id="cancelOrderModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xác nhận hủy đơn hàng</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn hủy đơn hàng này không?</p>
+                <p class="text-danger"><small>Lưu ý: Hành động này không thể hoàn tác.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" data-dismiss="modal">Đóng</button>
+                @using (Html.BeginForm("Cancel", "OrderHistory", FormMethod.Post, new { id = "cancelOrderForm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="cancelOrderId" name="id" value="@Model.Id" />
+                    <button type="submit" class="btn-danger">Xác nhận hủy</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section styles {
+    <link href="~/Content/css/order-history-style.css" rel="stylesheet" />
+}
+
+@section scripts {
+    <script src="~/Scripts/js/order-history-script.js"></script>
+    <script>
+        // Đảm bảo code chạy sau khi trang đã tải xong
+        $(document).ready(function() {
+            // Debug các phần tử
+            console.log('Initializing cancel button handlers');
+            console.log('Cancel buttons found:', $('.btn-cancel-order').length);
+            
+            // Gắn sự kiện trực tiếp cho nút hủy
+            $('.btn-cancel-order').on('click', function(e) {
+                e.preventDefault();
+                console.log('Cancel button clicked');
+                
+                // Lấy ID đơn hàng từ data attribute
+                var orderId = $(this).data('order-id');
+                console.log('Order ID:', orderId);
+                
+                // Cập nhật giá trị vào form
+                $('#cancelOrderId').val(orderId);
+                
+                // Hiển thị modal
+                $('#cancelOrderModal').modal('show');
+            });
+            
+            // Thêm hiệu ứng hover cho nút hủy
+            $('.btn-cancel-order').hover(
+                function() { $(this).css('background-color', '#ea4335').css('color', 'white'); },
+                function() { $(this).css('background-color', '').css('color', ''); }
+            );
+        });
+    </script>
+}

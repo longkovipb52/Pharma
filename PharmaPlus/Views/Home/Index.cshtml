@@ -1,0 +1,309 @@
+﻿@* filepath: c:\PharmaPlus\PharmaPlus\Views\Home\Index.cshtml *@
+@model PharmaPlus.Controllers.HomeViewModel
+@{
+    ViewBag.Title = "PharmaPlus - Nhà thuốc trực tuyến uy tín";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Hero Section -->
+<section class="hero-banner">
+    <div class="hero-container">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">Sức khỏe của bạn, <br><span class="highlight">Ưu tiên của chúng tôi</span></h1>
+                <p class="hero-description">Nhà thuốc trực tuyến uy tín với thuốc kê đơn, sản phẩm không kê đơn và tư vấn từ chuyên gia y tế.</p>
+                
+                <div class="hero-actions">
+                    <a href="@Url.Action("Index", "Products")" class="btn btn-primary">Mua ngay</a>
+                    <a href="@Url.Action("Upload", "Prescription")" class="btn btn-outline">Gửi đơn thuốc</a>
+                </div>
+            </div>
+            
+            <div class="hero-visual">
+                <div class="main-image">
+                    <img src="~/images/banners/bannner.jpg" alt="PharmaPlus" />
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Categories Section -->
+<section class="categories-section" id="categories">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Danh mục sản phẩm</h2>
+            <p class="section-description">Tìm đúng loại thuốc và sản phẩm chăm sóc sức khỏe cho nhu cầu của bạn</p>
+        </div>
+        
+        <div class="categories-grid">
+            @if (Model.Categories != null && Model.Categories.Any())
+            {
+                foreach (var category in Model.Categories)
+                {
+                    <a href="@Url.Action("Index", "Products")?category=@category.id" class="category-item">
+                        <div class="category-icon @GetCategoryIconClass(category.id)">
+                            <i class="@GetCategoryIcon(category.id)"></i>
+                        </div>
+                        <span class="category-name">@category.name</span>
+                    </a>
+                }
+            }
+            else
+            {
+                <p>Không có danh mục nào.</p>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products Section -->
+<section class="products-section" id="products">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Sản phẩm nổi bật</h2>
+        </div>
+        
+        <!-- Product Grid -->
+        <div class="products-grid">
+            @if (Model.FeaturedProducts != null && Model.FeaturedProducts.Any())
+            {
+                foreach (var product in Model.FeaturedProducts.Take(4))
+                {
+                    <div class="product-card">
+                        <div class="product-badge">@(product.category_id.HasValue && product.Category != null ? product.Category.name : "Nổi bật")</div>
+                        <div class="product-image">
+                            <img src="@product.DisplayImageUrl" alt="@product.name" onerror="this.onerror=null; this.src='/images/no-image.png';" />
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-name">@product.name</h3>
+                            <div class="product-price">@product.price.ToString("#,##0") ₫</div>
+                            <button class="btn-add-cart" onclick="addToCart(@product.id)">
+                                <i class="fas fa-cart-plus"></i> Thêm vào giỏ
+                            </button>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="no-products">
+                    <i class="fas fa-box-open"></i>
+                    <h3>Không có sản phẩm nào</h3>
+                    <p>Chúng tôi đang cập nhật kho hàng. Vui lòng quay lại sau!</p>
+                </div>
+            }
+        </div>
+        
+        <!-- View More Button -->
+        <div class="view-more-container">
+            <a href="@Url.Action("Index", "Products")" class="btn-view-more">
+                <span>Xem thêm sản phẩm</span>
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us Section -->
+<section class="why-choose-us">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Tại sao chọn PharmaPlus</h2>
+            <p class="section-description">Chúng tôi cam kết cung cấp dịch vụ và chăm sóc dược phẩm tốt nhất</p>
+        </div>
+        
+        <div class="benefits-grid">
+            <div class="benefit-item">
+                <div class="benefit-icon">
+                    <i class="fas fa-shipping-fast"></i>
+                </div>
+                <h3>Giao hàng nhanh chóng</h3>
+                <p>Nhận thuốc tại nhà trong vòng 24-48 giờ</p>
+            </div>
+            
+            <div class="benefit-item">
+                <div class="benefit-icon">
+                    <i class="fas fa-certificate"></i>
+                </div>
+                <h3>100% Chính hãng</h3>
+                <p>Tất cả sản phẩm được nhập trực tiếp từ nhà sản xuất ủy quyền</p>
+            </div>
+            
+            <div class="benefit-item">
+                <div class="benefit-icon">
+                    <i class="fas fa-headset"></i>
+                </div>
+                <h3>Hỗ trợ 24/7</h3>
+                <p>Dược sĩ của chúng tôi luôn sẵn sàng trả lời câu hỏi của bạn bất cứ lúc nào</p>
+            </div>
+            
+            <div class="benefit-item">
+                <div class="benefit-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3>Thanh toán an toàn</h3>
+                <p>Giao dịch của bạn được bảo vệ bằng mã hóa tiên tiến</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Khách hàng nói gì về chúng tôi</h2>
+            <p class="section-description">Lắng nghe chia sẻ từ khách hàng hài lòng về trải nghiệm với PharmaPlus</p>
+        </div>
+        
+        <div class="testimonials-grid">
+            @if (Model.LatestReviews != null && Model.LatestReviews.Any())
+            {
+                foreach (var review in Model.LatestReviews.Take(3))
+                {
+                    <div class="testimonial-card">
+                        <div class="stars">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i <= review.rating)
+                                {
+                                    <i class="fas fa-star"></i>
+                                }
+                                else
+                                {
+                                    <i class="far fa-star"></i>
+                                }
+                            }
+                        </div>
+                        <p class="testimonial-text">@review.comment</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">
+                                @if (review.User != null && !string.IsNullOrEmpty(review.User.full_name))
+                                {
+                                    <span>@review.User.full_name.Substring(0, 1)</span>
+                                }
+                                else
+                                {
+                                    <span>K</span>
+                                }
+                            </div>
+                            <div class="author-info">
+                                <h4>@(review.User != null ? review.User.full_name : "Khách hàng ẩn danh")</h4>
+                                <p>@(review.created_at.HasValue ? review.created_at.Value.ToString("dd/MM/yyyy") : "")</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="no-testimonials">
+                    <p>Hãy là người đầu tiên đánh giá!</p>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+@section scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Khởi tạo floating shapes
+            initFloatingShapes();
+            
+            // Khởi tạo animations
+            const statNumbers = document.querySelectorAll('.stat-number');
+            statNumbers.forEach(element => {
+                animateNumber(element);
+            });
+        });
+        
+        function addToCart(productId) {
+            // Lấy button đang được click
+            const button = event ? event.target.closest('.btn-add-cart') : null;
+            
+            // Thêm trạng thái loading
+            if (button) {
+                button.classList.add('loading');
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang thêm...';
+            }
+            
+            // Gọi AJAX để thêm vào giỏ hàng
+            fetch('/Cart/AddToCart', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ productId: productId, quantity: 1 })
+            })
+            .then(function(response) { return response.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    if (button) {
+                        button.classList.remove('loading');
+                        button.classList.add('success');
+                        button.innerHTML = '<i class="fas fa-check"></i> Đã thêm';
+                        
+                        // Trả về trạng thái ban đầu sau 1.5 giây
+                        setTimeout(() => {
+                            button.classList.remove('success');
+                            button.innerHTML = '<i class="fas fa-cart-plus"></i> Thêm vào giỏ';
+                        }, 1500);
+                    }
+                    
+                    showNotification(data.message || 'Đã thêm vào giỏ hàng!', 'success');
+                    if (typeof updateCartBadge === 'function') {
+                        updateCartBadge(data.totalItems);
+                    }
+                } else {
+                    if (button) {
+                        button.classList.remove('loading');
+                        button.innerHTML = '<i class="fas fa-cart-plus"></i> Thêm vào giỏ';
+                    }
+                    showNotification(data.message || 'Có lỗi xảy ra!', 'error');
+                }
+            })
+            .catch(function(error) {
+                console.error('Error:', error);
+                if (button) {
+                    button.classList.remove('loading');
+                    button.innerHTML = '<i class="fas fa-cart-plus"></i> Thêm vào giỏ';
+                }
+                showNotification('Có lỗi xảy ra khi thêm vào giỏ hàng!', 'error');
+            });
+        }
+    </script>
+}
+
+@functions {
+    public string GetCategoryIcon(int categoryId)
+    {
+        switch (categoryId)
+        {
+            case 1: return "fas fa-tablets";         // Thuốc kê đơn
+            case 2: return "fas fa-heartbeat";       // Chăm sóc sức khỏe
+            case 3: return "fas fa-baby";            // Mẹ và bé
+            case 4: return "fas fa-apple-alt";       // Thực phẩm chức năng
+            case 5: return "fas fa-spa";             // Làm đẹp
+            case 6: return "fas fa-stethoscope";     // Thiết bị y tế
+            default: return "fas fa-pills";
+        }
+    }
+
+    public string GetCategoryIconClass(int categoryId)
+    {
+        switch (categoryId)
+        {
+            case 1: return "pain-relief";    // Thuốc kê đơn - red
+            case 2: return "antibiotics";    // Chăm sóc sức khỏe - green
+            case 3: return "baby-care";      // Mẹ và bé - blue
+            case 4: return "vitamins";       // Thực phẩm chức năng - yellow
+            case 5: return "skin-care";      // Làm đẹp - purple
+            case 6: return "cold-flu";       // Thiết bị y tế - orange
+            default: return "pain-relief";
+        }
+    }
+}

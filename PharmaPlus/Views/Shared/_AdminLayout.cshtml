@@ -1,0 +1,152 @@
+﻿@{
+    Response.ContentEncoding = System.Text.Encoding.UTF8;
+    Response.Charset = "utf-8";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - PharmaPlus Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/Content/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/Content/css/admin-style.css" />
+    @RenderSection("styles", required: false)
+</head>
+<body>
+    <div class="admin-wrapper">
+        <!-- Sidebar -->
+        <div class="admin-sidebar">
+            <div class="sidebar-brand">
+                <i class="fas fa-pills"></i>
+                <h1 class="brand-name">PharmaPlus</h1>
+            </div>
+            
+            <div class="admin-profile">
+                <div class="admin-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="admin-info">
+                    <p class="admin-name">@Session["FullName"]</p>
+                    <p class="admin-role">Quản trị viên</p>
+                </div>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Dashboard" ? "active" : "")">
+                    <a href="@Url.Action("Dashboard", "Admin")" data-title="Dashboard">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="@(ViewContext.RouteData.Values["Controller"].ToString() == "AdminProducts" ? "active" : "")">
+                    <a href="@Url.Action("Index", "AdminProducts")" data-title="Sản phẩm">
+                        <i class="fas fa-pills"></i>
+                        <span>Quản lý sản phẩm</span>
+                    </a>
+                </li>
+                <li class="@(ViewContext.RouteData.Values["Controller"].ToString() == "AdminCategories" ? "active" : "")">
+                    <a href="@Url.Action("Index", "AdminCategories")" data-title="Danh mục">
+                        <i class="fas fa-tag"></i>
+                        <span>Danh mục sản phẩm</span>
+                    </a>
+                </li>
+                <li class="@(ViewContext.RouteData.Values["Controller"].ToString() == "AdminOrders" ? "active" : "")">
+                    <a href="@Url.Action("Index", "AdminOrders")" data-title="Đơn hàng">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Quản lý đơn hàng</span>
+                    </a>
+                </li>
+                <li class="@(ViewContext.RouteData.Values["Controller"].ToString() == "AdminUsers" ? "active" : "")">
+                    <a href="@Url.Action("Index", "AdminUsers")" data-title="Người dùng">
+                        <i class="fas fa-users"></i>
+                        <span>Quản lý người dùng</span>
+                    </a>
+                </li>
+                <li class="@(ViewContext.RouteData.Values["Controller"].ToString() == "AdminReviews" ? "active" : "")">
+                    <a href="@Url.Action("Index", "AdminReviews")" data-title="Đánh giá">
+                        <i class="fas fa-star"></i>
+                        <span>Đánh giá</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="@Url.Action("Index", "AdminContacts")" data-title="Liên hệ">
+                        <i class="fas fa-envelope"></i>
+                        <span>Quản lý liên hệ</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-footer">
+                <a href="@Url.Action("Index", "Home")" target="_blank" title="Xem trang web">
+                    <i class="fas fa-globe"></i>
+                </a>
+                <a href="@Url.Action("Logout", "Account")" title="Đăng xuất">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="admin-main">
+            <!-- Top Navbar -->
+            <div class="admin-navbar">
+                <button id="sidebar-toggle" class="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                
+                <div class="navbar-right">
+                    <div class="user-dropdown">
+                        <button class="dropdown-toggle">
+                            <i class="fas fa-user-circle"></i>
+                            <span>@Session["Username"]</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a href="@Url.Action("Profile", "Admin")" class="dropdown-item">
+                                <i class="fas fa-user"></i> Hồ sơ
+                            </a>
+                            <a href="@Url.Action("ChangePassword", "Admin")" class="dropdown-item">
+                                <i class="fas fa-key"></i> Đổi mật khẩu
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="@Url.Action("Logout", "Account")" class="dropdown-item">
+                                <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Page Content -->
+            <div class="admin-content">
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+                    </div>
+                }
+                
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle"></i> @TempData["ErrorMessage"]
+                    </div>
+                }
+                
+                @RenderBody()
+            </div>
+            
+            <!-- Footer -->
+            <footer class="admin-footer">
+                <p>&copy; @DateTime.Now.Year - PharmaPlus Admin Panel</p>
+            </footer>
+        </div>
+    </div>
+
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/js/admin-script.js"></script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

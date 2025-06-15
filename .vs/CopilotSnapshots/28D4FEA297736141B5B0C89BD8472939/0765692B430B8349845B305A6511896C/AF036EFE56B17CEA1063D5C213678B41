@@ -1,0 +1,72 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using PharmaPlus.Models;
+using System.Data.Entity.Infrastructure;
+
+namespace PharmaPlus.Controllers
+{
+    public class HomeController : Controller
+    {
+        public ActionResult Index()
+        {
+            return View();
+        }
+
+        public ActionResult About()
+        {
+            ViewBag.Message = "Your application description page.";
+
+            return View();
+        }
+
+        public ActionResult Contact()
+        {
+            ViewBag.Message = "Your contact page.";
+
+            return View();
+        }
+
+        public ActionResult TestDbConnection()
+        {
+            try
+            {
+                // Tạo đối tượng PharmaContext
+                using (var db = new PharmaContext())
+                {
+                    // Kiểm tra kết nối bằng cách truy vấn đơn giản
+                    bool canConnect = db.Database.Exists();
+                    
+                    // Thử truy vấn dữ liệu
+                    int userCount = db.Users.Count();
+                    int productCount = db.Products.Count();
+                    int categoryCount = db.Categories.Count();
+                    
+                    // Chuẩn bị thông tin để hiển thị
+                    ViewBag.ConnectionSuccess = true;
+                    ViewBag.UserCount = userCount;
+                    ViewBag.ProductCount = productCount;
+                    ViewBag.CategoryCount = categoryCount;
+                    ViewBag.Message = "Kết nối cơ sở dữ liệu thành công!";
+                }
+            }
+            catch (Exception ex)
+            {
+                // Ghi lại thông tin lỗi
+                ViewBag.ConnectionSuccess = false;
+                ViewBag.ErrorMessage = ex.Message;
+                
+                if (ex.InnerException != null)
+                {
+                    ViewBag.InnerError = ex.InnerException.Message;
+                }
+                
+                ViewBag.Message = "Không thể kết nối đến cơ sở dữ liệu.";
+            }
+            
+            return View();
+        }
+    }
+}

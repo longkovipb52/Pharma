@@ -1,0 +1,246 @@
+﻿@model PharmaPlus.Models.OrderHistoryViewModel
+@{
+    ViewBag.Title = "Lịch sử đơn hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    Response.ContentEncoding = System.Text.Encoding.UTF8;
+    Response.Charset = "utf-8";
+}
+
+<div class="order-history-page">
+    <div class="container">
+        <div class="page-header">
+            <div class="page-header-left">
+                <h1 class="page-title">Lịch sử đơn hàng</h1>
+                <p class="page-description">Xem và theo dõi trạng thái đơn hàng của bạn</p>
+            </div>
+        </div>
+
+        <div class="order-filter-section">
+            @using (Html.BeginForm("Index", "OrderHistory", FormMethod.Get, new { @class = "order-filter-form" }))
+            {
+                <div class="filter-grid">
+                    <div class="filter-item">
+                        <label for="Filter_FromDate">Từ ngày</label>
+                        <input type="date" id="Filter_FromDate" name="FromDate" value="@(Model.Filter.FromDate.HasValue ? Model.Filter.FromDate.Value.ToString("yyyy-MM-dd") : "")" class="form-control" />
+                    </div>
+                    <div class="filter-item">
+                        <label for="Filter_ToDate">Đến ngày</label>
+                        <input type="date" id="Filter_ToDate" name="ToDate" value="@(Model.Filter.ToDate.HasValue ? Model.Filter.ToDate.Value.ToString("yyyy-MM-dd") : "")" class="form-control" />
+                    </div>
+                    <div class="filter-item">
+                        <label for="Filter_Status">Trạng thái</label>
+                        <select id="Filter_Status" name="Status" class="form-control">
+                            <option value="">Tất cả</option>
+                            <option value="1" @(Model.Filter.Status == 1 ? "selected" : "")>Đang xử lý</option>
+                            <option value="2" @(Model.Filter.Status == 2 ? "selected" : "")>Đã xác nhận</option>
+                            <option value="3" @(Model.Filter.Status == 3 ? "selected" : "")>Đang giao hàng</option>
+                            <option value="4" @(Model.Filter.Status == 4 ? "selected" : "")>Đã giao hàng</option>
+                            <option value="5" @(Model.Filter.Status == 5 ? "selected" : "")>Đã hoàn thành</option>
+                            <option value="6" @(Model.Filter.Status == 6 ? "selected" : "")>Đã hủy</option>
+                            <option value="7" @(Model.Filter.Status == 7 ? "selected" : "")>Hoàn trả</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label for="Filter_Keyword">Tìm kiếm</label>
+                        <input type="text" id="Filter_Keyword" name="Keyword" value="@Model.Filter.Keyword" class="form-control" placeholder="Mã đơn hàng, tên người nhận" />
+                    </div>
+                    <div class="filter-actions">
+                        <button type="submit" class="btn-filter"><i class="fas fa-filter"></i> Lọc</button>
+                        <a href="@Url.Action("Index", "OrderHistory")" class="btn-reset"><i class="fas fa-redo"></i> Đặt lại</a>
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if (!Model.Orders.Any())
+        {
+            <div class="no-orders">
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-shopping-bag"></i>
+                    </div>
+                    <h3>Bạn chưa có đơn hàng nào</h3>
+                    <p>Hãy khám phá các sản phẩm chất lượng và đặt hàng ngay hôm nay để theo dõi đơn hàng của bạn tại đây.</p>
+                    <a href="@Url.Action("Index", "Products")" class="btn-shop-now">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Mua sắm ngay</span>
+                    </a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="order-list-section">
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i>
+                        <span>@TempData["SuccessMessage"]</span>
+                    </div>
+                }
+
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span>@TempData["ErrorMessage"]</span>
+                    </div>
+                }
+
+                @if (Model.Orders != null && Model.Orders.Any())
+                {
+                    <div class="order-list">
+                        @foreach (var order in Model.Orders)
+                        {
+                            <div class="order-card">
+                                <div class="order-header">
+                                    <div class="order-code">
+                                        <span class="label">Mã đơn hàng:</span>
+                                        <span class="value">@order.OrderCode</span>
+                                    </div>
+                                    <div class="order-date">
+                                        <span class="label">Ngày đặt:</span>
+                                        <span class="value">@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</span>
+                                    </div>
+                                    <div class="order-status">
+                                        <span class="status-dot status-@order.StatusCode"></span>
+                                        <span class="status-text">@order.Status</span>
+                                    </div>
+                                </div>
+                                <div class="order-content">
+                                    <div class="order-info">
+                                        <div>
+                                            <span class="info-label">Thanh toán:</span>
+                                            <span class="info-value">@order.PaymentMethod</span>
+                                        </div>
+                                        <div>
+                                            <span class="info-label">Số lượng:</span>
+                                            <span class="info-value">@order.ItemCount sản phẩm</span>
+                                        </div>
+                                        <div>
+                                            <span class="info-label">Tổng tiền:</span>
+                                            <span class="info-value price">@order.TotalAmount.ToString("N0") ₫</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="order-footer">
+                                    <a href="@Url.Action("Detail", "OrderHistory", new { id = order.Id })" class="btn-view-detail">
+                                        <span>Chi tiết</span>
+                                        <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                    @if (order.CanCancel)
+                                    {
+                                        <button type="button" class="btn-cancel-order" data-order-id="@order.Id">
+                                            <i class="fas fa-times-circle"></i>
+                                            <span>Hủy đơn hàng</span>
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="no-orders">
+                        <i class="fas fa-shopping-bag"></i>
+                        <h3>Bạn chưa có đơn hàng nào</h3>
+                        <p>Hãy tiếp tục mua sắm và đặt hàng để theo dõi chúng tại đây.</p>
+                        <a href="@Url.Action("Index", "Products")" class="btn-primary">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>Mua sắm ngay</span>
+                        </a>
+                    </div>
+                }
+
+                <!-- Phân trang - sửa phần này -->
+                @if (Model.Pagination.TotalPages > 0)
+                {
+                    <div class="pagination">
+                        <ul>
+                            @{
+                                if (Model.Pagination.CurrentPage > 1)
+                                {
+                                    <li>
+                                        <a href="@Url.Action("Index", "OrderHistory", new {
+                                            page = Model.Pagination.CurrentPage - 1,
+                                            Status = Model.Filter.Status,
+                                            Keyword = Model.Filter.Keyword,
+                                            FromDate = Model.Filter.FromDate.HasValue ? Model.Filter.FromDate.Value.ToString("yyyy-MM-dd") : null,
+                                            ToDate = Model.Filter.ToDate.HasValue ? Model.Filter.ToDate.Value.ToString("yyyy-MM-dd") : null
+                                        })" class="prev-page">
+                                            <i class="fas fa-chevron-left"></i>
+                                        </a>
+                                    </li>
+                                }
+
+                                for (int i = Math.Max(1, Model.Pagination.CurrentPage - 2); i <= Math.Min(Model.Pagination.TotalPages, Model.Pagination.CurrentPage + 2); i++)
+                                {
+                                    <li class="@(i == Model.Pagination.CurrentPage ? "active" : "")">
+                                        <a href="@Url.Action("Index", "OrderHistory", new {
+                                            page = i,
+                                            Status = Model.Filter.Status,
+                                            Keyword = Model.Filter.Keyword,
+                                            FromDate = Model.Filter.FromDate.HasValue ? Model.Filter.FromDate.Value.ToString("yyyy-MM-dd") : null,
+                                            ToDate = Model.Filter.ToDate.HasValue ? Model.Filter.ToDate.Value.ToString("yyyy-MM-dd") : null
+                                        })">@i</a>
+                                    </li>
+                                }
+
+                                if (Model.Pagination.CurrentPage < Model.Pagination.TotalPages)
+                                {
+                                    <li>
+                                        <a href="@Url.Action("Index", "OrderHistory", new {
+                                            page = Model.Pagination.CurrentPage + 1,
+                                            Status = Model.Filter.Status,
+                                            Keyword = Model.Filter.Keyword,
+                                            FromDate = Model.Filter.FromDate.HasValue ? Model.Filter.FromDate.Value.ToString("yyyy-MM-dd") : null,
+                                            ToDate = Model.Filter.ToDate.HasValue ? Model.Filter.ToDate.Value.ToString("yyyy-MM-dd") : null
+                                        })" class="next-page">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </a>
+                                    </li>
+                                }
+                            }
+                        </ul>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Modal xác nhận hủy đơn hàng -->
+<div class="modal fade" id="cancelOrderModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xác nhận hủy đơn hàng</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn hủy đơn hàng này không?</p>
+                <p class="text-danger"><small>Lưu ý: Hành động này không thể hoàn tác.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" data-dismiss="modal">Đóng</button>
+                @using (Html.BeginForm("Cancel", "OrderHistory", FormMethod.Post, new { id = "cancelOrderForm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="cancelOrderId" name="id" value="" />
+                    <button type="submit" class="btn-danger">Xác nhận hủy</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section styles {
+    <link href="~/Content/css/order-history-style.css" rel="stylesheet" />
+}
+
+@section scripts {
+    <script src="~/Scripts/js/order-history-script.js"></script>
+}

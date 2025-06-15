@@ -1,0 +1,176 @@
+﻿@model PharmaPlus.Models.AdminContactViewModel
+@{
+    ViewBag.Title = "Xóa liên hệ";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    Response.ContentEncoding = System.Text.Encoding.UTF8;
+    Response.Charset = "utf-8";
+}
+
+<div class="admin-contact-delete">
+    <div class="back-link mb-3">
+        <a href="@Url.Action("Details", new { id = Model.Id })" class="btn btn-link">
+            <i class="fas fa-arrow-left"></i> Quay lại chi tiết
+        </a>
+    </div>
+    
+    <div class="card">
+        <div class="card-header bg-danger text-white">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-exclamation-triangle"></i> Xác nhận xóa liên hệ
+            </h5>
+        </div>
+        
+        <div class="card-body">
+            <div class="alert alert-warning mb-4">
+                <i class="fas fa-exclamation-circle"></i>
+                <strong>Cảnh báo:</strong> Bạn đang chuẩn bị xóa liên hệ này. Hành động này không thể hoàn tác.
+            </div>
+            
+            <div class="contact-info mb-4">
+                <h6 class="card-subtitle mb-3">Thông tin liên hệ</h6>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="contact-field">
+                            <label>Người gửi:</label>
+                            <div>@Model.Name</div>
+                        </div>
+                        
+                        <div class="contact-field">
+                            <label>Email:</label>
+                            <div>@Model.Email</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="contact-field">
+                            <label>Ngày gửi:</label>
+                            <div>@Model.FormattedCreatedAt</div>
+                        </div>
+                        
+                        <div class="contact-field">
+                            <label>Trạng thái:</label>
+                            <div><span class="@Model.StatusClass">@Model.Status</span></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="contact-field mt-3">
+                    <label>Tiêu đề:</label>
+                    <div>@Model.Subject</div>
+                </div>
+                
+                <div class="contact-field mt-3">
+                    <label>Nội dung:</label>
+                    <div class="contact-message">@Model.Message</div>
+                </div>
+            </div>
+            
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+                
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Xác nhận xóa
+                    </button>
+                    <a href="@Url.Action("Details", new { id = Model.Id })" class="btn btn-secondary ml-2">
+                        <i class="fas fa-times"></i> Hủy
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section styles {
+    <style>
+        .admin-contact-delete {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .card-title i {
+            margin-right: 10px;
+        }
+        
+        .contact-info {
+            background-color: #f8f9fc;
+            border-radius: 0.35rem;
+            padding: 15px;
+        }
+        
+        .contact-field {
+            margin-bottom: 10px;
+        }
+        
+        .contact-field label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #4e73df;
+        }
+        
+        .contact-message {
+            background-color: white;
+            border: 1px solid #e3e6f0;
+            border-radius: 0.35rem;
+            padding: 15px;
+            min-height: 80px;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-line;
+        }
+        
+        .badge {
+            padding: 0.5em 1em;
+        }
+        
+        .bg-success {
+            background-color: #1cc88a !important;
+            color: white;
+        }
+        
+        .bg-primary {
+            background-color: #4e73df !important;
+            color: white;
+        }
+        
+        .bg-warning {
+            background-color: #f6c23e !important;
+            color: #212529;
+        }
+        
+        .bg-secondary {
+            background-color: #858796 !important;
+            color: white;
+        }
+        
+        .back-link a {
+            color: #4e73df;
+        }
+        
+        .back-link a:hover {
+            text-decoration: none;
+        }
+        
+        .alert-warning {
+            color: #856404;
+            background-color: #fff3cd;
+            border-color: #ffeeba;
+        }
+        
+        .alert-warning i {
+            margin-right: 8px;
+        }
+        
+        .btn-danger {
+            background-color: #e74a3b;
+            border-color: #e74a3b;
+        }
+        
+        .btn-danger:hover {
+            background-color: #d52a1a;
+            border-color: #c9211e;
+        }
+    </style>
+}

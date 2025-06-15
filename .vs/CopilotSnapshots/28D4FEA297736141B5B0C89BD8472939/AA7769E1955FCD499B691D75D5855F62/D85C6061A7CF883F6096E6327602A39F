@@ -1,0 +1,163 @@
+﻿using System;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using System.Web.Security;
+using PharmaPlus.Models;
+using System.Security.Cryptography;
+using System.Text;
+
+namespace PharmaPlus.Controllers
+{
+    public class AccountController : Controller
+    {
+        private PharmaContext db = new PharmaContext();
+
+        // GET: Account/Login
+        public ActionResult Login(string returnUrl)
+        {
+            ViewBag.ReturnUrl = returnUrl;
+            return View();
+        }
+
+        // POST: Account/Login
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Login(LoginViewModel model, string returnUrl)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = db.Users.FirstOrDefault(u => 
+                    (u.username == model.Username || u.email == model.Username) && 
+                    u.password == HashPassword(model.Password));
+
+                if (user != null)
+                {
+                    // Xử lý đăng nhập thành công
+                    FormsAuthentication.SetAuthCookie(user.username, model.RememberMe);
+                    
+                    // Lưu thông tin người dùng vào session
+                    Session["UserId"] = user.id;
+                    Session["Username"] = user.username;
+                    Session["FullName"] = user.full_name;
+                    Session["UserRole"] = user.role;
+
+                    // Chuyển hướng người dùng
+                    if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    {
+                        return Redirect(returnUrl);
+                    }
+                    else
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Tên đăng nhập hoặc mật khẩu không đúng");
+                }
+            }
+
+            // Nếu đến đây, có nghĩa là đăng nhập thất bại, hiển thị form lại
+            ViewBag.ReturnUrl = returnUrl;
+            return View(model);
+        }
+
+        // GET: Account/Register
+        public ActionResult Register()
+        {
+            return View();
+        }
+
+        // POST: Account/Register
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Register(RegisterViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                // Kiểm tra username đã tồn tại chưa
+                var existingUsername = db.Users.FirstOrDefault(u => u.username == model.Username);
+                if (existingUsername != null)
+                {
+                    ModelState.AddModelError("Username", "Tên đăng nhập này đã được sử dụng");
+                    return View(model);
+                }
+
+                // Kiểm tra email đã tồn tại chưa
+                var existingEmail = db.Users.FirstOrDefault(u => u.email == model.Email);
+                if (existingEmail != null)
+                {
+                    ModelState.AddModelError("Email", "Email này đã được sử dụng");
+                    return View(model);
+                }
+
+                // Tạo người dùng mới
+                var user = new User
+                {
+                    username = model.Username,
+                    full_name = model.FullName,
+                    email = model.Email,
+                    password = HashPassword(model.Password),
+                    role = "customer", // Mặc định là khách hàng
+                    created_at = DateTime.Now
+                };
+
+                // Lưu vào cơ sở dữ liệu
+                db.Users.Add(user);
+                db.SaveChanges();
+
+                // Đăng nhập người dùng ngay lập tức sau khi đăng ký
+                FormsAuthentication.SetAuthCookie(user.username, false);
+                
+                // Lưu thông tin người dùng vào session
+                Session["UserId"] = user.id;
+                Session["Username"] = user.username;
+                Session["FullName"] = user.full_name;
+                Session["UserRole"] = user.role;
+
+                // Chuyển hướng người dùng về trang chủ
+                return RedirectToAction("Index", "Home");
+            }
+
+            // Nếu đến đây có nghĩa là có lỗi xảy ra, hiển thị form lại
+            return View(model);
+        }
+
+        // GET: Account/Logout
+        public ActionResult Logout()
+        {
+            FormsAuthentication.SignOut();
+            
+            // Xóa thông tin phiên
+            Session.Clear();
+            Session.Abandon();
+
+            // Xóa cookie xác thực
+            var cookie = new HttpCookie(FormsAuthentication.FormsCookieName, "");
+            cookie.Expires = DateTime.Now.AddYears(-1);
+            Response.Cookies.Add(cookie);
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        // Phương thức mã hóa mật khẩu
+        private string HashPassword(string password)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+                return BitConverter.ToString(hashedBytes).Replace("-", "").ToLower();
+            }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+    }
+}

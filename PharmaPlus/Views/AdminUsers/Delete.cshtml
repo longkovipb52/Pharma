@@ -1,0 +1,164 @@
+﻿@model PharmaPlus.Models.AdminUserViewModel
+@{
+    ViewBag.Title = "Xóa người dùng";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    Response.ContentEncoding = System.Text.Encoding.UTF8;
+    Response.Charset = "utf-8";
+}
+
+<div class="admin-user-delete">
+    <div class="back-link">
+        <a href="@Url.Action("Index")" class="btn btn-link">
+            <i class="fas fa-arrow-left"></i> Quay lại danh sách
+        </a>
+    </div>
+    
+    <div class="card">
+        <div class="card-header bg-danger text-white">
+            <h1 class="card-title"><i class="fas fa-exclamation-triangle"></i> Xác nhận xóa người dùng</h1>
+        </div>
+        
+        <div class="card-body">
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle"></i> @TempData["ErrorMessage"]
+                </div>
+            }
+            
+            <div class="alert alert-warning">
+                <p><strong>Cảnh báo:</strong> Bạn đang chuẩn bị xóa người dùng này. Hành động này không thể hoàn tác.</p>
+            </div>
+            
+            <div class="user-info">
+                <div class="info-item">
+                    <span class="info-label">ID:</span>
+                    <span class="info-value">@Model.Id</span>
+                </div>
+                
+                <div class="info-item">
+                    <span class="info-label">Tên đăng nhập:</span>
+                    <span class="info-value">@Model.Username</span>
+                </div>
+                
+                <div class="info-item">
+                    <span class="info-label">Họ tên:</span>
+                    <span class="info-value">@Model.FullName</span>
+                </div>
+                
+                <div class="info-item">
+                    <span class="info-label">Email:</span>
+                    <span class="info-value">@Model.Email</span>
+                </div>
+                
+                <div class="info-item">
+                    <span class="info-label">Vai trò:</span>
+                    <span class="info-value"><span class="@Model.RoleClass">@Model.RoleDisplay</span></span>
+                </div>
+                
+                <div class="info-item">
+                    <span class="info-label">Ngày tạo:</span>
+                    <span class="info-value">@Model.FormattedCreatedAt</span>
+                </div>
+                
+                <div class="info-item">
+                    <span class="info-label">Số đơn hàng:</span>
+                    <span class="info-value">@Model.OrderCount</span>
+                </div>
+            </div>
+            
+            @if (Model.Id == 1 && Model.Role == "admin")
+            {
+                <div class="alert alert-danger mt-4">
+                    <i class="fas fa-exclamation-triangle"></i> Không thể xóa tài khoản admin mặc định của hệ thống.
+                </div>
+            }
+            else if (Model.OrderCount > 0)
+            {
+                <div class="alert alert-danger mt-4">
+                    <i class="fas fa-exclamation-triangle"></i> Không thể xóa người dùng này vì đã có @Model.OrderCount đơn hàng.
+                </div>
+            }
+            else
+            {
+                using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Xác nhận xóa
+                        </button>
+                        <a href="@Url.Action("Index")" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Hủy bỏ
+                        </a>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+@section styles {
+    <style>
+        .admin-user-delete {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .back-link {
+            margin-bottom: 15px;
+        }
+        
+        .card-title {
+            margin-bottom: 0;
+            font-size: 1.5rem;
+        }
+        
+        .card-title i {
+            margin-right: 10px;
+        }
+        
+        .user-info {
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .info-item {
+            margin-bottom: 15px;
+            display: flex;
+        }
+        
+        .info-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            width: 150px;
+        }
+        
+        .info-value {
+            flex: 1;
+        }
+        
+        .badge {
+            padding: 0.25em 0.6em;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 0.35rem;
+        }
+        
+        .form-actions {
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        .form-actions .btn {
+            margin: 0 5px;
+            min-width: 150px;
+        }
+    </style>
+}

@@ -1,0 +1,275 @@
+﻿@model PharmaPlus.Models.ContactViewModel
+@{
+    ViewBag.Title = "Liên hệ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    Response.ContentEncoding = System.Text.Encoding.UTF8;
+    Response.Charset = "utf-8";
+}
+
+<div class="contact-page">
+    <div class="contact-bg">
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="contact-header" data-aos="fade-up">
+            <h1 class="contact-title">Liên hệ với chúng tôi</h1>
+            <p class="contact-description">Hãy cho chúng tôi biết câu hỏi, ý kiến hoặc thắc mắc của bạn. Đội ngũ PharmaPlus luôn sẵn sàng hỗ trợ!</p>
+        </div>
+
+        <div class="contact-wrapper">
+            <div class="contact-info" data-aos="fade-right" data-aos-delay="100">
+                <div class="contact-info-card">
+                    <h3 class="info-title"><i class="fas fa-map-marker-alt"></i> Địa chỉ</h3>
+                    <p class="info-text">123 Nguyễn Văn Linh, Phường Tân Thuận Đông, Quận 7, TP.HCM</p>
+                </div>
+
+                <div class="contact-info-card">
+                    <h3 class="info-title"><i class="fas fa-phone"></i> Điện thoại</h3>
+                    <p class="info-text">
+                        <a href="tel:1800123456" class="contact-link">1800-123-456</a> (Miễn phí)
+                    </p>
+                    <p class="info-text">
+                        <a href="tel:02812345678" class="contact-link">(028) 1234-5678</a> (Giờ làm việc)
+                    </p>
+                </div>
+
+                <div class="contact-info-card">
+                    <h3 class="info-title"><i class="fas fa-envelope"></i> Email</h3>
+                    <p class="info-text">
+                        <a href="mailto:info@pharmaplus.vn" class="contact-link">info@pharmaplus.vn</a>
+                    </p>
+                    <p class="info-text">
+                        <a href="mailto:support@pharmaplus.vn" class="contact-link">support@pharmaplus.vn</a>
+                    </p>
+                </div>
+
+                <div class="contact-info-card">
+                    <h3 class="info-title"><i class="fas fa-clock"></i> Giờ làm việc</h3>
+                    <p class="info-text">Thứ 2 - Thứ 6: 8:00 - 18:00</p>
+                    <p class="info-text">Thứ 7: 8:00 - 12:00</p>
+                    <p class="info-text">Chủ nhật: Đóng cửa</p>
+                </div>
+
+                <div class="contact-social">
+                    <h3 class="info-title">Kết nối với chúng tôi</h3>
+                    <div class="social-links">
+                        <a href="#" class="social-link facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link youtube"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="social-link zalo">Zalo</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contact-form-container" data-aos="fade-left" data-aos-delay="200">
+                @if (!ViewData.ModelState.IsValid && ViewData.ModelState[""].Errors.Count > 0)
+                {
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span>@ViewData.ModelState[""].Errors.First().ErrorMessage</span>
+                    </div>
+                }
+
+                <div class="contact-form-card">
+                    <h3 class="form-title">Gửi thông tin liên hệ</h3>
+
+                    @using (Html.BeginForm("Submit", "Contact", FormMethod.Post, new { @class = "contact-form", id = "contactForm" }))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <div class="input-with-icon">
+                                    <i class="fas fa-user"></i>
+                                    @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Họ và tên" })
+                                </div>
+                                @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="form-group">
+                                <div class="input-with-icon">
+                                    <i class="fas fa-envelope"></i>
+                                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Email" })
+                                </div>
+                                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                            </div>
+                            
+                            <div class="form-group full-width">
+                                <div class="custom-dropdown">
+                                    <div class="custom-dropdown-header">
+                                        <i class="fas fa-tag"></i>
+                                        <span class="dropdown-title">-- Chọn chủ đề --</span>
+                                        <i class="fas fa-chevron-down dropdown-arrow"></i>
+                                    </div>
+                                    
+                                    <div class="custom-dropdown-options">
+                                        @foreach (var option in Model.SubjectOptions)
+                                        {
+                                            <div class="dropdown-option" data-value="@option.Value">@option.Text</div>
+                                        }
+                                    </div>
+                                    
+                                    @Html.HiddenFor(m => m.Subject, new { @class = "subject-hidden-input" })
+                                </div>
+                                @Html.ValidationMessageFor(m => m.Subject, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="form-group full-width">
+                                <div class="input-with-icon textarea-icon">
+                                    <i class="fas fa-comment"></i>
+                                    @Html.TextAreaFor(m => m.Message, new { @class = "form-control", rows = "5", placeholder = "Nội dung liên hệ..." })
+                                </div>
+                                @Html.ValidationMessageFor(m => m.Message, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn-send">
+                                    <span class="btn-text">Gửi liên hệ</span>
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                                @if (Session["UserId"] != null)
+                                {
+                                    <a href="@Url.Action("History", "Contact")" class="btn-history">
+                                        <span>Lịch sử liên hệ</span>
+                                        <i class="fas fa-history"></i>
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="map-section" data-aos="fade-up">
+        <h3 class="map-title">Tìm chúng tôi</h3>
+        <div class="map-container">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.8142159967213!2d106.69756842489636!3d10.745774102261216!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f6fcaf67041%3A0x8d59e976732dca27!2zMTIzIE5ndXnhu4VuIFbEg24gTGluaCwgVMOibiBUaHXhuq1uIMSQw7RuZywgUXXhuq1uIDcsIFRow6BuaCBwaOG7kSBI4buTIENow60gTWluaCwgVmnhu4d0IE5hbQ!5e0!3m2!1svi!2s!4v1686751640908!5m2!1svi!2s" 
+                width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+    </div>
+
+    <div class="faq-section container" data-aos="fade-up">
+        <h2 class="faq-title">Câu hỏi thường gặp</h2>
+        <div class="faq-list">
+            <div class="faq-item" data-aos="fade-up" data-aos-delay="100">
+                <div class="faq-question">
+                    <h3>Làm thế nào để đặt hàng trên website?</h3>
+                    <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+                </div>
+                <div class="faq-answer">
+                    <p>Để đặt hàng trên website PharmaPlus, bạn cần chọn sản phẩm muốn mua, thêm vào giỏ hàng, và tiến hành thanh toán. Bạn có thể thanh toán bằng nhiều phương thức khác nhau như tiền mặt khi nhận hàng, chuyển khoản ngân hàng, hoặc ví điện tử.</p>
+                </div>
+            </div>
+
+            <div class="faq-item" data-aos="fade-up" data-aos-delay="200">
+                <div class="faq-question">
+                    <h3>Chính sách đổi trả sản phẩm như thế nào?</h3>
+                    <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+                </div>
+                <div class="faq-answer">
+                    <p>PharmaPlus cam kết đảm bảo chất lượng sản phẩm. Bạn có thể đổi trả sản phẩm trong vòng 7 ngày kể từ ngày nhận hàng nếu sản phẩm bị lỗi, hư hỏng hoặc không đúng như mô tả. Tuy nhiên, chúng tôi không áp dụng đổi trả cho các sản phẩm đã mở hoặc sử dụng, trừ trường hợp sản phẩm bị lỗi.</p>
+                </div>
+            </div>
+
+            <div class="faq-item" data-aos="fade-up" data-aos-delay="300">
+                <div class="faq-question">
+                    <h3>PharmaPlus có giao hàng toàn quốc không?</h3>
+                    <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+                </div>
+                <div class="faq-answer">
+                    <p>Có, PharmaPlus giao hàng toàn quốc. Thời gian giao hàng từ 1-3 ngày đối với khu vực thành phố lớn và 3-7 ngày đối với các tỉnh khác. Phí giao hàng sẽ được tính dựa trên khoảng cách và trọng lượng đơn hàng.</p>
+                </div>
+            </div>
+
+            <div class="faq-item" data-aos="fade-up" data-aos-delay="400">
+                <div class="faq-question">
+                    <h3>Tôi cần đơn thuốc để mua thuốc kê đơn?</h3>
+                    <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+                </div>
+                <div class="faq-answer">
+                    <p>Đúng vậy, đối với các thuốc kê đơn, bạn cần cung cấp đơn thuốc của bác sĩ. Sau khi đặt hàng, bạn có thể tải lên ảnh đơn thuốc hoặc gửi qua email cho chúng tôi. Chúng tôi sẽ xác nhận đơn thuốc trước khi gửi hàng cho bạn.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section styles {
+    <link rel="stylesheet" href="~/Content/css/contact-style.css" />
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
+}
+
+@section scripts {
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="~/Scripts/js/contact-script.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Initialize AOS
+            AOS.init({
+                duration: 800,
+                easing: 'ease-out-cubic',
+                once: true,
+                offset: 50
+            });
+            
+            // FAQ Accordion
+            $('.faq-question').on('click', function() {
+                $(this).parent().toggleClass('active');
+                $(this).next('.faq-answer').slideToggle(200);
+                $(this).find('.faq-icon i').toggleClass('fa-chevron-down fa-chevron-up');
+            });
+            
+            // Form animations
+            $('#contactForm input, #contactForm textarea, #contactForm select').on('focus', function() {
+                $(this).parent().addClass('focused');
+            }).on('blur', function() {
+                if ($(this).val() === '') {
+                    $(this).parent().removeClass('focused');
+                }
+            });
+            
+            // Check if fields have values on page load
+            $('#contactForm input, #contactForm textarea, #contactForm select').each(function() {
+                if ($(this).val() !== '') {
+                    $(this).parent().addClass('focused');
+                }
+            });
+            
+            // Form submission animation
+            $('#contactForm').on('submit', function() {
+                if ($(this).valid()) {
+                    $('.btn-send').addClass('sending');
+                    $('.btn-send .btn-text').text('Đang gửi...');
+                }
+            });
+            
+            $('.custom-dropdown-header').on('click', function() {
+                $(this).parent().toggleClass('open');
+            });
+            
+            $('.dropdown-option').on('click', function() {
+                const value = $(this).data('value');
+                const text = $(this).text();
+                
+                $('.subject-hidden-input').val(value);
+                $('.dropdown-title').text(text);
+                $(this).closest('.custom-dropdown').removeClass('open');
+            });
+            
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('.custom-dropdown').length) {
+                    $('.custom-dropdown').removeClass('open');
+                }
+            });
+        });
+    </script>
+}

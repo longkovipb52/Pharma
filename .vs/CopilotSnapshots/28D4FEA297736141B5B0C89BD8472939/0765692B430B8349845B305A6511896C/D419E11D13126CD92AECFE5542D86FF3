@@ -1,0 +1,56 @@
+﻿@{
+    ViewBag.Title = "Kiểm Tra Kết Nối Cơ Sở Dữ Liệu";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Kiểm Tra Kết Nối Cơ Sở Dữ Liệu</h2>
+
+<div class="panel @(ViewBag.ConnectionSuccess ? "panel-success" : "panel-danger")">
+    <div class="panel-heading">
+        <h3 class="panel-title">Kết quả kiểm tra</h3>
+    </div>
+    <div class="panel-body">
+        <h4>@ViewBag.Message</h4>
+        
+        @if (ViewBag.ConnectionSuccess)
+        {
+            <div class="alert alert-success">
+                <p><strong>Trạng thái:</strong> Kết nối thành công</p>
+                <hr />
+                <h4>Thống kê dữ liệu:</h4>
+                <ul>
+                    <li><strong>Số lượng người dùng:</strong> @ViewBag.UserCount</li>
+                    <li><strong>Số lượng sản phẩm:</strong> @ViewBag.ProductCount</li>
+                    <li><strong>Số lượng danh mục:</strong> @ViewBag.CategoryCount</li>
+                </ul>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-danger">
+                <p><strong>Trạng thái:</strong> Kết nối thất bại</p>
+                <hr />
+                <h4>Thông tin lỗi:</h4>
+                <p><strong>Lỗi:</strong> @ViewBag.ErrorMessage</p>
+                
+                @if (!string.IsNullOrEmpty(ViewBag.InnerError))
+                {
+                    <p><strong>Lỗi chi tiết:</strong> @ViewBag.InnerError</p>
+                }
+                
+                <hr />
+                <h4>Các bước khắc phục:</h4>
+                <ol>
+                    <li>Kiểm tra chuỗi kết nối trong file Web.config</li>
+                    <li>Đảm bảo SQL Server đang chạy</li>
+                    <li>Đảm bảo cơ sở dữ liệu Pharma đã được tạo</li>
+                    <li>Kiểm tra quyền truy cập của tài khoản đến cơ sở dữ liệu</li>
+                </ol>
+            </div>
+        }
+    </div>
+</div>
+
+<div>
+    @Html.ActionLink("Quay lại trang chủ", "Index", null, new { @class = "btn btn-primary" })
+</div>

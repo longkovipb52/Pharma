@@ -1,0 +1,177 @@
+﻿@model PharmaPlus.Models.AdminReviewDetailsViewModel
+@{
+    ViewBag.Title = "Xóa đánh giá";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    Response.ContentEncoding = System.Text.Encoding.UTF8;
+    Response.Charset = "utf-8";
+}
+
+<div class="admin-review-delete">
+    <div class="back-link">
+        <a href="@Url.Action("Details", new { id = Model.Id })" class="btn btn-link">
+            <i class="fas fa-arrow-left"></i> Quay lại chi tiết
+        </a>
+    </div>
+    
+    <div class="card">
+        <div class="card-header bg-danger text-white">
+            <h1 class="card-title"><i class="fas fa-exclamation-triangle"></i> Xác nhận xóa đánh giá</h1>
+        </div>
+        
+        <div class="card-body">
+            <div class="alert alert-warning">
+                <p><strong>Cảnh báo:</strong> Bạn đang chuẩn bị xóa đánh giá này. Hành động này không thể hoàn tác.</p>
+            </div>
+            
+            <div class="review-preview mb-4">
+                <div class="preview-header">
+                    <div class="preview-user">
+                        <i class="fas fa-user-circle"></i>
+                        <a href="@Url.Action("Details", "AdminUsers", new { id = Model.UserId })">
+                            @Model.UserName
+                        </a>
+                    </div>
+                    <div class="preview-date">
+                        @Model.FormattedCreatedAt
+                    </div>
+                </div>
+                <div class="preview-product">
+                    <a href="@Url.Action("Details", "AdminProducts", new { id = Model.ProductId })">
+                        <i class="fas fa-box"></i> @Model.ProductName
+                    </a>
+                </div>
+                <div class="preview-rating">
+                    @Html.Raw(Model.RatingStars)
+                </div>
+                <div class="preview-status">
+                    <span class="status-label">Trạng thái:</span>
+                    <span class="@Model.StatusClass">@Model.StatusText</span>
+                </div>
+                <div class="preview-comment">
+                    @Model.Comment
+                </div>
+            </div>
+            
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Xác nhận xóa
+                    </button>
+                    <a href="@Url.Action("Details", new { id = Model.Id })" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Hủy bỏ
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section styles {
+    <style>
+        .admin-review-delete {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .back-link {
+            margin-bottom: 15px;
+        }
+        
+        .card-title {
+            margin-bottom: 0;
+            font-size: 1.5rem;
+        }
+        
+        .card-title i {
+            margin-right: 10px;
+        }
+        
+        .review-preview {
+            background-color: #f8f9fc;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .preview-user {
+            font-weight: 600;
+        }
+        
+        .preview-user i {
+            margin-right: 5px;
+            color: #4e73df;
+        }
+        
+        .preview-date {
+            color: #858796;
+            font-size: 0.9rem;
+        }
+        
+        .preview-product {
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .preview-product i {
+            color: #4e73df;
+        }
+        
+        .preview-rating {
+            margin-bottom: 10px;
+        }
+        
+        .preview-status {
+            margin-bottom: 10px;
+        }
+        
+        .status-label {
+            font-weight: 600;
+            margin-right: 5px;
+        }
+        
+        .badge {
+            padding: 0.25em 0.6em;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 0.35rem;
+        }
+        
+        .preview-comment {
+            background-color: white;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #e3e6f0;
+        }
+        
+        .form-actions {
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        .form-actions .btn {
+            margin: 0 5px;
+            min-width: 150px;
+        }
+        
+        .bg-success {
+            background-color: #1cc88a !important;
+        }
+        
+        .bg-warning {
+            background-color: #f6c23e !important;
+        }
+        
+        .bg-danger {
+            background-color: #e74a3b !important;
+        }
+    </style>
+}

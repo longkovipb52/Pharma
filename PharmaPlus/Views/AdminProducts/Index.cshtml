@@ -1,0 +1,276 @@
+﻿@model IEnumerable<PharmaPlus.Models.Product>
+@{
+    ViewBag.Title = "Quản lý sản phẩm";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    Response.ContentEncoding = System.Text.Encoding.UTF8;
+    Response.Charset = "utf-8";
+}
+
+<div class="admin-products-page">
+    <div class="page-header">
+        <div class="header-title">
+            <h1 class="page-title"><i class="fas fa-pills"></i> Quản lý sản phẩm</h1>
+        </div>
+        <div class="header-actions">
+            <a href="@Url.Action("Create")" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Thêm sản phẩm mới
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-md-6">
+                    <form action="@Url.Action("Index")" method="get" class="search-form">
+                        <div class="input-group">
+                            <input type="text" name="searchString" value="@ViewBag.CurrentFilter" class="form-control" placeholder="Tìm kiếm sản phẩm..." />
+                            <span class="input-group-btn">
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i></button>
+                                @if (!string.IsNullOrEmpty(ViewBag.CurrentFilter))
+                                {
+                                    <a href="@Url.Action("Index")" class="btn btn-default"><i class="fas fa-times"></i></a>
+                                }
+                            </span>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-6">
+                    <div class="filter-wrapper">
+                        <form id="categoryFilterForm" action="@Url.Action("Index")" method="get">
+                            <label>Lọc theo danh mục:</label>
+                            <select id="categoryFilter" name="categoryId" class="form-control" onchange="document.getElementById('categoryFilterForm').submit();">
+                                <option value="">-- Tất cả danh mục --</option>
+                                @foreach (var category in ViewBag.Categories)
+                                {
+                                    <option value="@category.id" @(ViewBag.CategoryId != null && ViewBag.CategoryId.ToString() == category.id.ToString() ? "selected" : "")>
+                                        @category.name
+                                    </option>
+                                }
+                            </select>
+                            
+                            <!-- Giữ lại các tham số hiện tại -->
+                            @if (!string.IsNullOrEmpty(ViewBag.CurrentSort))
+                            {
+                                <input type="hidden" name="sortOrder" value="@ViewBag.CurrentSort" />
+                            }
+                            @if (!string.IsNullOrEmpty(ViewBag.CurrentFilter))
+                            {
+                                <input type="hidden" name="searchString" value="@ViewBag.CurrentFilter" />
+                            }
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover data-table">
+                    <thead>
+                        <tr>
+                            <th>Ảnh</th>
+                            <th>
+                                <a href="@Url.Action("Index", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter, categoryId = ViewBag.CategoryId })">
+                                    Tên sản phẩm
+                                    @if (ViewBag.CurrentSort == "" || ViewBag.CurrentSort == "name_desc")
+                                    {
+                                        <i class="fas @(ViewBag.CurrentSort == "name_desc" ? "fa-sort-alpha-down-alt" : "fa-sort-alpha-down")"></i>
+                                    }
+                                </a>
+                            </th>
+                            <th>Danh mục</th>
+                            <th>
+                                <a href="@Url.Action("Index", new { sortOrder = ViewBag.PriceSortParm, currentFilter = ViewBag.CurrentFilter, categoryId = ViewBag.CategoryId })">
+                                    Giá
+                                    @if (ViewBag.CurrentSort == "price" || ViewBag.CurrentSort == "price_desc")
+                                    {
+                                        <i class="fas @(ViewBag.CurrentSort == "price_desc" ? "fa-sort-amount-down" : "fa-sort-amount-up")"></i>
+                                    }
+                                </a>
+                            </th>
+                            <th>
+                                <a href="@Url.Action("Index", new { sortOrder = ViewBag.StockSortParm, currentFilter = ViewBag.CurrentFilter, categoryId = ViewBag.CategoryId })">
+                                    Tồn kho
+                                    @if (ViewBag.CurrentSort == "stock" || ViewBag.CurrentSort == "stock_desc")
+                                    {
+                                        <i class="fas @(ViewBag.CurrentSort == "stock_desc" ? "fa-sort-amount-down" : "fa-sort-amount-up")"></i>
+                                    }
+                                </a>
+                            </th>
+                            <th>Đơn thuốc</th>
+                            <th>Ngày tạo</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.image_url))
+                                        {
+                                            <img src="@Url.Content("~/images/products/" + item.image_url)" alt="@item.name" class="product-thumbnail" />
+                                        }
+                                        else
+                                        {
+                                            <div class="no-image"><i class="fas fa-image"></i></div>
+                                        }
+                                    </td>
+                                    <td>@item.name</td>
+                                    <td>@(item.Category != null ? item.Category.name : "Không có")</td>
+                                    <td>@String.Format("{0:#,##0}", item.price) VNĐ</td>
+                                    <td>
+                                        @if (item.stock == 0)
+                                        {
+                                            <span class="badge badge-danger">Hết hàng</span>
+                                        }
+                                        else if (item.stock <= 10)
+                                        {
+                                            <span class="badge badge-warning">@item.stock</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-success">@item.stock</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (item.prescription_required == true)
+                                        {
+                                            <span class="badge badge-info"><i class="fas fa-prescription"></i> Yêu cầu</span>
+                                        }
+                                        else
+                                        {
+                                            <span>Không</span>
+                                        }
+                                    </td>
+                                    <td>@(item.created_at.HasValue ? item.created_at.Value.ToString("dd/MM/yyyy") : "")</td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="@Url.Action("Details", new { id = item.id })" class="btn btn-info btn-sm" title="Chi tiết">
+                                                <i class="fas fa-info-circle"></i>
+                                            </a>
+                                            <a href="@Url.Action("Edit", new { id = item.id })" class="btn btn-primary btn-sm" title="Sửa">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="@Url.Action("Delete", new { id = item.id })" class="btn btn-danger btn-sm" title="Xóa">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center">Không tìm thấy sản phẩm nào.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function() {
+            // Đảm bảo jQuery đã được load đầy đủ
+            $("#categoryFilter").on('change', function() {
+                filterByCategory();
+            });
+            
+            window.filterByCategory = function() {
+                var categoryId = $("#categoryFilter").val();
+                console.log("Selected category ID: " + categoryId);
+                
+                // Tạo URL mới
+                var baseUrl = '@Url.Action("Index")';
+                var url = baseUrl;
+                
+                // Thêm categoryId vào URL nếu có
+                if (categoryId) {
+                    url = baseUrl + '?categoryId=' + categoryId;
+                }
+                
+                // Thêm các tham số khác từ URL hiện tại
+                var currentSort = '@ViewBag.CurrentSort';
+                if (currentSort && currentSort !== '') {
+                    url += (url.indexOf('?') >= 0) ? '&sortOrder=' + currentSort : '?sortOrder=' + currentSort;
+                }
+                
+                var currentFilter = '@ViewBag.CurrentFilter';
+                if (currentFilter && currentFilter !== '') {
+                    url += (url.indexOf('?') >= 0) ? '&searchString=' + encodeURIComponent(currentFilter) : '?searchString=' + encodeURIComponent(currentFilter);
+                }
+                
+                console.log("Redirecting to: " + url);
+                window.location.href = url;
+            }
+        });
+    </script>
+}
+
+@section styles {
+    <style>
+        .product-thumbnail {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        
+        .no-image {
+            width: 50px;
+            height: 50px;
+            background: #f5f5f5;
+            color: #aaa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .filter-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        
+        .filter-wrapper label {
+            margin-right: 10px;
+            margin-bottom: 0;
+        }
+        
+        .badge-danger {
+            background: #e74a3b;
+            color: white;
+        }
+        
+        .badge-warning {
+            background: #f6c23e;
+            color: #212529;
+        }
+        
+        .badge-success {
+            background: #1cc88a;
+            color: white;
+        }
+        
+        .badge-info {
+            background: #36b9cc;
+            color: white;
+        }
+    </style>
+}

@@ -1,0 +1,126 @@
+﻿@* filepath: c:\PharmaPlus\PharmaPlus\Views\Products\QuickView.cshtml *@
+@model PharmaPlus.Models.Product
+@{
+    Response.ContentEncoding = System.Text.Encoding.UTF8;
+    Response.Charset = "utf-8";
+}
+
+<div class="quickview-container">
+    <div class="quickview-image-section">
+        <div class="quickview-image-wrapper">
+            <img src="@Model.DisplayImageUrl" 
+                 alt="@Model.name" 
+                 class="quickview-image"
+                 onerror="this.src='/images/products/default-product.jpg'" />
+            
+            @* Product badges *@
+            @if (Model.StockStatus == "out-of-stock")
+            {
+                <div class="quickview-badge badge-out-of-stock">Hết hàng</div>
+            }
+            else if (Model.StockStatus == "low-stock")
+            {
+                <div class="quickview-badge badge-low-stock">Sắp hết</div>
+            }
+            else if (Model.IsNew)
+            {
+                <div class="quickview-badge badge-new">Mới</div>
+            }
+        </div>
+    </div>
+    
+    <div class="quickview-info-section">
+        <div class="quickview-header">
+            <div class="quickview-category">
+                @(Model.Category != null ? Model.Category.name : "Khác")
+            </div>
+            
+            <h2 class="quickview-title">@Model.name</h2>
+            
+            <div class="quickview-price">@Model.price.ToString("N0") VNĐ</div>
+        </div>
+        
+        <div class="quickview-stock-info">
+            <div class="stock-indicator @Model.StockStatus">
+                <i class="fas fa-box"></i>
+                <span>
+                    @if (Model.stock == 0)
+                    {
+                        @:Hết hàng
+                    }
+                    else if (Model.stock <= 5)
+                    {
+                        @:Còn @Model.stock sản phẩm
+                    }
+                    else
+                    {
+                        @:Còn hàng
+                    }
+                </span>
+            </div>
+        </div>
+        
+        @if (Model.prescription_required == true)
+        {
+            <div class="quickview-prescription-note">
+                <i class="fas fa-prescription-bottle-alt"></i>
+                <span>Sản phẩm này cần kê đơn bác sĩ</span>
+            </div>
+        }
+        
+        @if (!string.IsNullOrEmpty(Model.description))
+        {
+            <div class="quickview-description">
+                @{
+                    string desc = Model.description.Length > 150 ? 
+                                 Model.description.Substring(0, 150) + "..." : 
+                                 Model.description;
+                }
+                @Html.Raw(desc.Replace("\n", "<br/>"))
+            </div>
+        }
+        
+        @if (Model.stock > 0)
+        {
+            <div class="quickview-quantity-section">
+                <label class="quantity-label">Số lượng:</label>
+                <div class="quantity-controls">
+                    <button type="button" class="quantity-btn" onclick="decreaseQuantity()">-</button>
+                    <input type="number" id="quickviewQuantity" class="quantity-input" value="1" min="1" max="@Model.stock">
+                    <button type="button" class="quantity-btn" onclick="increaseQuantity(@Model.stock)">+</button>
+                </div>
+            </div>
+        }
+        
+        <div class="quickview-actions">
+            <button class="quickview-btn btn-add-cart" 
+                    onclick="addToCartFromQuickView(@Model.id, event)" 
+                    @(Model.stock == 0 ? "disabled" : "")
+                    data-product-id="@Model.id">
+                <i class="fas fa-@(Model.stock == 0 ? "ban" : "cart-plus")"></i>
+                @(Model.stock == 0 ? "Hết hàng" : "Thêm vào giỏ")
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Thêm đoạn script này vào cuối file QuickView.cshtml -->
+<script>
+    // Debug script để check số lượng
+    document.addEventListener('DOMContentLoaded', function() {
+        const quantityInput = document.getElementById('quickviewQuantity');
+        const addButton = document.querySelector('.btn-add-cart');
+        
+        if (quantityInput && addButton) {
+            // Log khi số lượng thay đổi
+            quantityInput.addEventListener('change', function() {
+                console.log('🔢 Quantity changed to:', this.value);
+            });
+            
+            // Log trước khi thêm vào giỏ
+            addButton.addEventListener('mousedown', function() {
+                console.log('🛒 Add to Cart with quantity:', quantityInput.value);
+            }, true);
+        }
+    });
+</script>

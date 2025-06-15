@@ -1,0 +1,74 @@
+﻿@model PharmaPlus.Models.LoginViewModel
+@{
+    ViewBag.Title = "Đăng nhập - PharmaPlus";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    <link rel="stylesheet" href="~/Content/css/auth-style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="auth-page">
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-image">
+                <div class="auth-image-overlay"></div>
+                <div class="auth-image-content">
+                    <div class="brand">
+                        <i class="fas fa-pills"></i>
+                        <span>PharmaPlus</span>
+                    </div>
+                    <h2>Chào mừng trở lại!</h2>
+                    <p>Đăng nhập để truy cập tài khoản của bạn, theo dõi đơn hàng và quản lý đơn thuốc một cách dễ dàng.</p>
+                    <p>Chưa có tài khoản? <a href="@Url.Action("Register", "Account")" style="color: white; text-decoration: underline;">Đăng ký ngay</a>.</p>
+                </div>
+            </div>
+            <div class="auth-form">
+                <h1>Đăng nhập</h1>
+                
+                @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true, "", new { @class = "validation-summary-errors" })
+                    
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Username)
+                        @Html.TextBoxFor(m => m.Username, new { @class = "form-control", placeholder = "Nhập tên đăng nhập hoặc email" })
+                        @Html.ValidationMessageFor(m => m.Username, "", new { @class = "field-validation-error" })
+                    </div>
+                    
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Password)
+                        @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Nhập mật khẩu" })
+                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "field-validation-error" })
+                    </div>
+                    
+                    <div class="form-check">
+                        @Html.CheckBoxFor(m => m.RememberMe)
+                        @Html.LabelFor(m => m.RememberMe)
+                    </div>
+                    
+                    <button type="submit" class="auth-btn">
+                        <i class="fas fa-sign-in-alt"></i> Đăng nhập
+                    </button>
+                    
+                    <div class="auth-links">
+                        <p>Chưa có tài khoản? <a href="@Url.Action("Register", "Account")">Đăng ký ngay</a></p>
+                        <p><a href="@Url.Action("Index", "Home")"><i class="fas fa-home"></i> Quay về trang chủ</a></p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>

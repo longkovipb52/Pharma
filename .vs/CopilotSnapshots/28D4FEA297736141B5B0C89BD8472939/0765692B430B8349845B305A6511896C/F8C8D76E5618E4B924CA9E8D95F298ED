@@ -1,0 +1,233 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Entity.Infrastructure;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Text;
+using PharmaPlus.Models;
+using System.Configuration;
+
+namespace PharmaPlus.Helpers
+{
+    /// <summary>
+    /// Lớp tiện ích để kiểm tra kết nối cơ sở dữ liệu và các vấn đề liên quan
+    /// </summary>
+    public static class DbTestHelper
+    {
+        /// <summary>
+        /// Kiểm tra kết nối cơ sở dữ liệu sử dụng Entity Framework
+        /// </summary>
+        /// <returns>Kết quả kiểm tra dạng chuỗi</returns>
+        public static DbConnectionTestResult TestEntityFrameworkConnection()
+        {
+            var result = new DbConnectionTestResult();
+            
+            try
+            {
+                using (var db = new PharmaContext())
+                {
+                    // Kiểm tra kết nối bằng cách truy vấn đơn giản
+                    bool canConnect = db.Database.Exists();
+                    result.IsSuccessful = canConnect;
+                    
+                    if (canConnect)
+                    {
+                        try
+                        {
+                            // Kiểm tra mỗi bảng
+                            result.TableResults.Add("Users", new TableTestResult { Count = db.Users.Count(), HasData = db.Users.Any() });
+                            result.TableResults.Add("Products", new TableTestResult { Count = db.Products.Count(), HasData = db.Products.Any() });
+                            result.TableResults.Add("Categories", new TableTestResult { Count = db.Categories.Count(), HasData = db.Categories.Any() });
+                            result.TableResults.Add("Orders", new TableTestResult { Count = db.Orders.Count(), HasData = db.Orders.Any() });
+                            result.TableResults.Add("OrderItems", new TableTestResult { Count = db.OrderItems.Count(), HasData = db.OrderItems.Any() });
+                            result.TableResults.Add("Payments", new TableTestResult { Count = db.Payments.Count(), HasData = db.Payments.Any() });
+                            result.TableResults.Add("Carts", new TableTestResult { Count = db.Carts.Count(), HasData = db.Carts.Any() });
+                            result.TableResults.Add("Reviews", new TableTestResult { Count = db.Reviews.Count(), HasData = db.Reviews.Any() });
+                        }
+                        catch (Exception ex)
+                        {
+                            result.Warnings.Add($"Kết nối thành công nhưng có lỗi khi truy vấn dữ liệu: {ex.Message}");
+                        }
+                    }
+                    else
+                    {
+                        result.Error = "Kết nối đến cơ sở dữ liệu thất bại";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsSuccessful = false;
+                result.Error = ex.Message;
+                if (ex.InnerException != null)
+                {
+                    result.InnerError = ex.InnerException.Message;
+                }
+            }
+            
+            return result;
+        }
+        
+        /// <summary>
+        /// Kiểm tra trực tiếp chuỗi kết nối không qua Entity Framework
+        /// </summary>
+        /// <returns>Kết quả kiểm tra dạng chuỗi</returns>
+        public static DbConnectionTestResult TestDirectConnection()
+        {
+            var result = new DbConnectionTestResult();
+            
+            try
+            {
+                // Lấy chuỗi kết nối từ Web.config
+                string connectionString = ConfigurationManager.ConnectionStrings["PharmaContext"].ConnectionString;
+                result.ConnectionString = connectionString;
+                
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    // Mở kết nối
+                    connection.Open();
+                    result.IsSuccessful = true;
+                    
+                    // Kiểm tra cơ sở dữ liệu hiện tại
+                    using (SqlCommand cmd = new SqlCommand("SELECT DB_NAME()", connection))
+                    {
+                        result.DatabaseName = cmd.ExecuteScalar().ToString();
+                    }
+                    
+                    // Kiểm tra phiên bản SQL Server
+                    using (SqlCommand cmd = new SqlCommand("SELECT @@VERSION", connection))
+                    {
+                        result.ServerVersion = cmd.ExecuteScalar().ToString();
+                    }
+                    
+                    // Kiểm tra các bảng
+                    using (SqlCommand cmd = new SqlCommand(
+                        @"SELECT TABLE_NAME, 
+                          (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = t.TABLE_NAME) AS ColumnCount
+                          FROM INFORMATION_SCHEMA.TABLES t 
+                          WHERE TABLE_TYPE = 'BASE TABLE'", connection))
+                    {
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                string tableName = reader["TABLE_NAME"].ToString();
+                                int columnCount = Convert.ToInt32(reader["ColumnCount"]);
+                                result.DbSchemaInfo.Add(tableName, columnCount);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsSuccessful = false;
+                result.Error = ex.Message;
+                if (ex.InnerException != null)
+                {
+                    result.InnerError = ex.InnerException.Message;
+                }
+            }
+            
+            return result;
+        }
+        
+        /// <summary>
+        /// Kiểm tra cấu hình chuỗi kết nối
+        /// </summary>
+        /// <returns>Kết quả kiểm tra cấu hình</returns>
+        public static List<ConnectionStringCheckResult> CheckConnectionStrings()
+        {
+            var results = new List<ConnectionStringCheckResult>();
+            
+            ConnectionStringSettingsCollection connectionStrings = ConfigurationManager.ConnectionStrings;
+            
+            foreach (ConnectionStringSettings connectionString in connectionStrings)
+            {
+                var result = new ConnectionStringCheckResult
+                {
+                    Name = connectionString.Name,
+                    ConnectionString = connectionString.ConnectionString,
+                    ProviderName = connectionString.ProviderName
+                };
+                
+                // Phân tích chuỗi kết nối
+                if (!string.IsNullOrEmpty(connectionString.ConnectionString))
+                {
+                    try
+                    {
+                        SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(connectionString.ConnectionString);
+                        result.DataSource = builder.DataSource;
+                        result.InitialCatalog = builder.InitialCatalog;
+                        result.IntegratedSecurity = builder.IntegratedSecurity;
+                        result.UserID = builder.UserID;
+                        result.IsValid = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        result.IsValid = false;
+                        result.Error = ex.Message;
+                    }
+                }
+                else
+                {
+                    result.IsValid = false;
+                    result.Error = "Chuỗi kết nối trống";
+                }
+                
+                results.Add(result);
+            }
+            
+            return results;
+        }
+    }
+    
+    /// <summary>
+    /// Lớp lưu trữ kết quả kiểm tra kết nối cơ sở dữ liệu
+    /// </summary>
+    public class DbConnectionTestResult
+    {
+        public DbConnectionTestResult()
+        {
+            TableResults = new Dictionary<string, TableTestResult>();
+            DbSchemaInfo = new Dictionary<string, int>();
+            Warnings = new List<string>();
+        }
+        
+        public bool IsSuccessful { get; set; }
+        public string DatabaseName { get; set; }
+        public string ServerVersion { get; set; }
+        public string ConnectionString { get; set; }
+        public string Error { get; set; }
+        public string InnerError { get; set; }
+        public Dictionary<string, TableTestResult> TableResults { get; set; }
+        public Dictionary<string, int> DbSchemaInfo { get; set; }
+        public List<string> Warnings { get; set; }
+    }
+    
+    /// <summary>
+    /// Lớp lưu trữ kết quả kiểm tra một bảng
+    /// </summary>
+    public class TableTestResult
+    {
+        public int Count { get; set; }
+        public bool HasData { get; set; }
+    }
+    
+    /// <summary>
+    /// Lớp lưu trữ kết quả kiểm tra chuỗi kết nối
+    /// </summary>
+    public class ConnectionStringCheckResult
+    {
+        public string Name { get; set; }
+        public string ConnectionString { get; set; }
+        public string ProviderName { get; set; }
+        public string DataSource { get; set; }
+        public string InitialCatalog { get; set; }
+        public bool IntegratedSecurity { get; set; }
+        public string UserID { get; set; }
+        public bool IsValid { get; set; }
+        public string Error { get; set; }
+    }
+}

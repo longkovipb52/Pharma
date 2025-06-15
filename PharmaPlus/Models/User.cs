@@ -1,0 +1,40 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace PharmaPlus.Models
+{
+    [Table("User")]
+    public class User
+    {
+        [Key]
+        public int id { get; set; }
+
+        [Required]
+        [StringLength(50)]
+        public string username { get; set; }
+
+        [Required]
+        [StringLength(255)]
+        public string password { get; set; }
+
+        [StringLength(50)]
+        public string full_name { get; set; }
+
+        [Required]
+        [StringLength(100)]
+        [EmailAddress]
+        public string email { get; set; }
+
+        [StringLength(20)]
+        public string role { get; set; }
+
+        public DateTime? created_at { get; set; }
+
+        // 🔥 FIX: Navigation properties
+        public virtual ICollection<Cart> Carts { get; set; } = new List<Cart>();
+        public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
+        public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
+    }
+}

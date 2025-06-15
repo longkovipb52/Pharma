@@ -1,0 +1,150 @@
+﻿@model PharmaPlus.Models.ProfileViewModel
+@{
+    ViewBag.Title = "Hồ sơ cá nhân";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    Response.ContentEncoding = System.Text.Encoding.UTF8;
+    Response.Charset = "utf-8";
+}
+
+<div class="profile-container">
+    <div class="profile-header">
+        <div class="container">
+            <div class="profile-header-content">
+                <div class="profile-avatar">
+                    <div class="avatar-circle">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+                <div class="profile-info">
+                    <h1>@(Model.FullName ?? "Chưa cập nhật")</h1>
+                    <p class="profile-username">@@@Model.Username</p>
+                    <p class="profile-role">
+                        <span class="role-badge">@Model.RoleDisplay</span>
+                    </p>
+                </div>
+                <div class="profile-actions">
+                    <a href="@Url.Action("EditProfile")" class="btn btn-primary">
+                        <i class="fas fa-edit"></i> Chỉnh sửa hồ sơ
+                    </a>
+                    <a href="@Url.Action("ChangePassword")" class="btn btn-outline">
+                        <i class="fas fa-key"></i> Đổi mật khẩu
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle"></i>
+                @TempData["SuccessMessage"]
+            </div>
+        }
+
+        <div class="profile-content">
+            <!-- Thông tin cá nhân -->
+            <div class="profile-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-user-circle"></i> Thông tin cá nhân</h2>
+                </div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>Tên đăng nhập:</label>
+                        <span>@Model.Username</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Họ và tên:</label>
+                        <span>@(Model.FullName ?? "Chưa cập nhật")</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Email:</label>
+                        <span>@Model.Email</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Vai trò:</label>
+                        <span>@Model.RoleDisplay</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Ngày tham gia:</label>
+                        <span>@Model.FormattedCreatedAt</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thống kê đơn hàng -->
+            <div class="profile-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-shopping-bag"></i> Thống kê mua hàng</h2>
+                    <a href="@Url.Action("Index", "OrderHistory")" class="btn btn-sm btn-outline">Xem tất cả</a>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number">@ViewBag.OrderSummary.TotalOrders</div>
+                            <div class="stat-label">Tổng đơn hàng</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number">@ViewBag.OrderSummary.FormattedTotalSpent</div>
+                            <div class="stat-label">Tổng chi tiêu</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number">@ViewBag.OrderSummary.PendingOrders</div>
+                            <div class="stat-label">Đang xử lý</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number">@ViewBag.OrderSummary.CompletedOrders</div>
+                            <div class="stat-label">Hoàn thành</div>
+                        </div>
+                    </div>
+                </div>
+                @if (ViewBag.OrderSummary.LastOrderDate != null)
+                {
+                    <div class="last-order-info">
+                        <p><strong>Đơn hàng gần nhất:</strong> @ViewBag.OrderSummary.FormattedLastOrderDate</p>
+                    </div>
+                }
+            </div>
+
+            <!-- Liên kết nhanh -->
+            <div class="profile-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-link"></i> Liên kết nhanh</h2>
+                </div>
+                <div class="quick-links">
+                    <a href="@Url.Action("Index", "OrderHistory")" class="quick-link-item">
+                        <i class="fas fa-list"></i>
+                        <span>Lịch sử đơn hàng</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                    <a href="@Url.Action("Index", "Products")" class="quick-link-item">
+                        <i class="fas fa-pills"></i>
+                        <span>Tiếp tục mua sắm</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link href="~/Content/css/profile-style.css" rel="stylesheet" />

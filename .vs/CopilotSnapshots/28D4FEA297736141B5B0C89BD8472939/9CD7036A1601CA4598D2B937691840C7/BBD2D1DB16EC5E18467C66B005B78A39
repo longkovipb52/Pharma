@@ -1,0 +1,61 @@
+﻿using System.Data.Entity;
+
+namespace PharmaPlus.Models
+{
+    public class PharmaContext : DbContext
+    {
+        public PharmaContext() : base("name=PharmaContext")
+        {
+            // Thiết lập không khởi tạo cơ sở dữ liệu vì đã có sẵn
+            Database.SetInitializer<PharmaContext>(null);
+        }
+
+        public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<Category> Categories { get; set; }
+        public virtual DbSet<Product> Products { get; set; }
+        public virtual DbSet<Order> Orders { get; set; }
+        public virtual DbSet<OrderItem> OrderItems { get; set; }
+        public virtual DbSet<Payment> Payments { get; set; }
+        public virtual DbSet<Cart> Carts { get; set; }
+        public virtual DbSet<Review> Reviews { get; set; }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            // Thiết lập mối quan hệ one-to-many giữa User và Review, User và Order
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Reviews)
+                .WithOptional(r => r.User)
+                .HasForeignKey(r => r.user_id);
+
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Orders)
+                .WithOptional(o => o.User)
+                .HasForeignKey(o => o.user_id);
+
+            // Thiết lập mối quan hệ one-to-many giữa Product và Review
+            modelBuilder.Entity<Product>()
+                .HasMany(p => p.Reviews)
+                .WithOptional(r => r.Product)
+                .HasForeignKey(r => r.product_id);
+
+            // Thiết lập mối quan hệ one-to-many giữa Category và Product
+            modelBuilder.Entity<Category>()
+                .HasMany(c => c.Products)
+                .WithOptional(p => p.Category)
+                .HasForeignKey(p => p.category_id);
+
+            // Thiết lập mối quan hệ one-to-many giữa Order và OrderItem, Order và Payment
+            modelBuilder.Entity<Order>()
+                .HasMany(o => o.OrderItems)
+                .WithOptional(oi => oi.Order)
+                .HasForeignKey(oi => oi.order_id);
+
+            modelBuilder.Entity<Order>()
+                .HasMany(o => o.Payments)
+                .WithOptional(p => p.Order)
+                .HasForeignKey(p => p.order_id);
+                
+            base.OnModelCreating(modelBuilder);
+        }
+    }
+}

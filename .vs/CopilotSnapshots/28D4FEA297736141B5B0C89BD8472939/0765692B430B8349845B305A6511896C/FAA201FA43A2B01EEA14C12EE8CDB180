@@ -1,0 +1,61 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using PharmaPlus.Helpers;
+using PharmaPlus.Models;
+
+namespace PharmaPlus.Controllers
+{
+    public class DbTestController : Controller
+    {
+        // GET: DbTest
+        public ActionResult Index()
+        {
+            return View();
+        }
+        
+        // GET: DbTest/EntityFrameworkTest
+        public ActionResult EntityFrameworkTest()
+        {
+            var result = DbTestHelper.TestEntityFrameworkConnection();
+            return View(result);
+        }
+        
+        // GET: DbTest/DirectConnectionTest
+        public ActionResult DirectConnectionTest()
+        {
+            var result = DbTestHelper.TestDirectConnection();
+            return View(result);
+        }
+        
+        // GET: DbTest/ConnectionStrings
+        public ActionResult ConnectionStrings()
+        {
+            var results = DbTestHelper.CheckConnectionStrings();
+            return View(results);
+        }
+        
+        // GET: DbTest/RunAllTests
+        public ActionResult RunAllTests()
+        {
+            var viewModel = new DbTestViewModel
+            {
+                EfTestResult = DbTestHelper.TestEntityFrameworkConnection(),
+                DirectTestResult = DbTestHelper.TestDirectConnection(),
+                ConnectionStringResults = DbTestHelper.CheckConnectionStrings()
+            };
+            
+            return View(viewModel);
+        }
+    }
+    
+    // ViewModel để hiển thị tất cả các kết quả kiểm tra
+    public class DbTestViewModel
+    {
+        public DbConnectionTestResult EfTestResult { get; set; }
+        public DbConnectionTestResult DirectTestResult { get; set; }
+        public List<ConnectionStringCheckResult> ConnectionStringResults { get; set; }
+    }
+}

@@ -1,0 +1,386 @@
+﻿@model PharmaPlus.Models.AdminUserDetailsViewModel
+@{
+    ViewBag.Title = "Chi tiết người dùng";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    Response.ContentEncoding = System.Text.Encoding.UTF8;
+    Response.Charset = "utf-8";
+}
+
+<div class="admin-user-details">
+    <div class="back-link">
+        <a href="@Url.Action("Index")" class="btn btn-link">
+            <i class="fas fa-arrow-left"></i> Quay lại danh sách
+        </a>
+    </div>
+    
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+    
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between">
+            <h1 class="card-title">Chi tiết người dùng</h1>
+            <div class="header-actions">
+                <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-primary">
+                    <i class="fas fa-edit"></i> Chỉnh sửa
+                </a>
+                <a href="@Url.Action("Delete", new { id = Model.Id })" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> Xóa
+                </a>
+            </div>
+        </div>
+        
+        <div class="card-body">
+            <div class="user-profile">
+                <div class="user-avatar">
+                    <div class="avatar-placeholder">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-role">
+                        <span class="@Model.RoleClass">@Model.RoleDisplay</span>
+                    </div>
+                </div>
+                <div class="user-info">
+                    <h2 class="user-name">@Model.FullName</h2>
+                    <div class="user-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-user-tag"></i> @Model.Username
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-envelope"></i> @Model.Email
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-calendar-alt"></i> Tham gia từ @Model.FormattedCreatedAt
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-shopping-cart"></i></div>
+                        <div class="stat-content">
+                            <div class="stat-value">@Model.OrderCount</div>
+                            <div class="stat-label">Đơn hàng</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-star"></i></div>
+                        <div class="stat-content">
+                            <div class="stat-value">@Model.ReviewCount</div>
+                            <div class="stat-label">Đánh giá</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-calendar-alt"></i></div>
+                        <div class="stat-content">
+                            <div class="stat-value">@((DateTime.Now - Model.CreatedAt.Value).Days)</div>
+                            <div class="stat-label">Ngày hoạt động</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-shopping-cart"></i> Đơn hàng gần đây
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.RecentOrders != null && Model.RecentOrders.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Mã đơn</th>
+                                        <th>Ngày đặt</th>
+                                        <th>Tổng tiền</th>
+                                        <th>Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var order in Model.RecentOrders)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <a href="@Url.Action("Details", "AdminOrders", new { id = order.Id })">
+                                                    #@order.Id
+                                                </a>
+                                            </td>
+                                            <td>@order.FormattedCreatedAt</td>
+                                            <td>@order.FormattedTotalPrice</td>
+                                            <td><span class="@order.StatusClass">@order.Status</span></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        if (Model.OrderCount > Model.RecentOrders.Count)
+                        {
+                            <div class="text-center mt-3">
+                                <a href="@Url.Action("Index", "AdminOrders", new { searchTerm = Model.FullName })" class="btn btn-sm btn-outline-primary">
+                                    Xem tất cả đơn hàng
+                                </a>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="empty-state">
+                            <i class="fas fa-shopping-cart"></i>
+                            <p>Người dùng chưa có đơn hàng nào</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-star"></i> Đánh giá gần đây
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.RecentReviews != null && Model.RecentReviews.Any())
+                    {
+                        <div class="reviews-list">
+                            @foreach (var review in Model.RecentReviews)
+                            {
+                                <div class="review-item">
+                                    <div class="review-header">
+                                        <div class="review-product">
+                                            <a href="@Url.Action("Details", "AdminProducts", new { id = review.ProductId })">
+                                                @review.ProductName
+                                            </a>
+                                        </div>
+                                        <div class="review-date">@review.FormattedCreatedAt</div>
+                                    </div>
+                                    <div class="review-rating">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            if (i <= review.Rating)
+                                            {
+                                                <i class="fas fa-star"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="far fa-star"></i>
+                                            }
+                                        }
+                                    </div>
+                                    <div class="review-comment">@review.Comment</div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="empty-state">
+                            <i class="fas fa-star"></i>
+                            <p>Người dùng chưa có đánh giá nào</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section styles {
+    <style>
+        .admin-user-details {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .back-link {
+            margin-bottom: 15px;
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-title {
+            margin-bottom: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .header-actions .btn {
+            margin-left: 10px;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            padding: 20px 0;
+        }
+        
+        .user-avatar {
+            margin-right: 30px;
+            position: relative;
+        }
+        
+        .avatar-placeholder {
+            width: 100px;
+            height: 100px;
+            background-color: #e9ecef;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #4e73df;
+        }
+        
+        .user-role {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .user-meta {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        
+        .meta-item {
+            margin-right: 20px;
+            margin-bottom: 8px;
+            color: #6c757d;
+        }
+        
+        .meta-item i {
+            width: 18px;
+            margin-right: 5px;
+            color: #4e73df;
+        }
+        
+        .stat-card {
+            background-color: #f8f9fc;
+            border-radius: 5px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .stat-icon {
+            font-size: 2.5rem;
+            color: #4e73df;
+            margin-right: 15px;
+            width: 50px;
+            text-align: center;
+        }
+        
+        .stat-content {
+            flex: 1;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .badge {
+            padding: 0.25em 0.6em;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 0.35rem;
+        }
+        
+        .reviews-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .review-item {
+            padding: 15px;
+            border-bottom: 1px solid #e3e6f0;
+        }
+        
+        .review-item:last-child {
+            border-bottom: none;
+        }
+        
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .review-product {
+            font-weight: 600;
+        }
+        
+        .review-date {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .review-rating {
+            margin-bottom: 8px;
+        }
+        
+        .review-rating .fas {
+            color: #f6c23e;
+        }
+        
+        .review-rating .far {
+            color: #d1d3e2;
+        }
+        
+        .review-comment {
+            color: #5a5c69;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 30px 0;
+            color: #aaa;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+    </style>
+}

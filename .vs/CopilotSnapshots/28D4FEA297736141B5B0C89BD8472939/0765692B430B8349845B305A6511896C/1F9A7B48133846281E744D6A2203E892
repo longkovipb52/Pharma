@@ -1,0 +1,90 @@
+﻿@{
+    ViewBag.Title = "Công Cụ Kiểm Tra Cơ Sở Dữ Liệu";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Công Cụ Kiểm Tra Cơ Sở Dữ Liệu</h2>
+
+<div class="jumbotron">
+    <h1>Kiểm tra cơ sở dữ liệu</h1>
+    <p class="lead">Sử dụng các công cụ dưới đây để kiểm tra kết nối cơ sở dữ liệu và xác định vấn đề.</p>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kiểm tra nhanh</h3>
+            </div>
+            <div class="panel-body">
+                <p>Chạy tất cả các kiểm tra cùng một lúc và xem kết quả tổng hợp.</p>
+                <p>
+                    @Html.ActionLink("Chạy tất cả các kiểm tra", "RunAllTests", null, new { @class = "btn btn-success btn-lg" })
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kiểm tra chi tiết</h3>
+            </div>
+            <div class="panel-body">
+                <div class="list-group">
+                    @Html.ActionLink("Kiểm tra Entity Framework", "EntityFrameworkTest", null, new { @class = "list-group-item" })
+                    @Html.ActionLink("Kiểm tra kết nối trực tiếp", "DirectConnectionTest", null, new { @class = "list-group-item" })
+                    @Html.ActionLink("Kiểm tra chuỗi kết nối", "ConnectionStrings", null, new { @class = "list-group-item" })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Hướng dẫn khắc phục sự cố</h3>
+            </div>
+            <div class="panel-body">
+                <h4>Các lỗi thường gặp và cách khắc phục</h4>
+                <div class="list-group">
+                    <div class="list-group-item">
+                        <h4 class="list-group-item-heading">Không thể kết nối đến máy chủ</h4>
+                        <p class="list-group-item-text">
+                            <ul>
+                                <li>Kiểm tra xem SQL Server đã được cài đặt và đang chạy.</li>
+                                <li>Kiểm tra tên máy chủ trong chuỗi kết nối có chính xác không.</li>
+                                <li>Kiểm tra các cài đặt tường lửa.</li>
+                            </ul>
+                        </p>
+                    </div>
+                    <div class="list-group-item">
+                        <h4 class="list-group-item-heading">Không thể mở cơ sở dữ liệu</h4>
+                        <p class="list-group-item-text">
+                            <ul>
+                                <li>Kiểm tra xem cơ sở dữ liệu Pharma đã được tạo chưa.</li>
+                                <li>Kiểm tra quyền của tài khoản người dùng trên cơ sở dữ liệu.</li>
+                            </ul>
+                        </p>
+                    </div>
+                    <div class="list-group-item">
+                        <h4 class="list-group-item-heading">Lỗi Entity Framework</h4>
+                        <p class="list-group-item-text">
+                            <ul>
+                                <li>Kiểm tra xem cấu trúc bảng có khớp với định nghĩa model không.</li>
+                                <li>Kiểm tra các ràng buộc và khóa ngoại.</li>
+                                <li>Đảm bảo đã cài đặt Entity Framework thông qua NuGet.</li>
+                            </ul>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    @Html.ActionLink("Quay lại trang chủ", "Index", "Home", null, new { @class = "btn btn-default" })
+</div>

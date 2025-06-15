@@ -1,0 +1,107 @@
+﻿@model PharmaPlus.Models.Review
+@{
+    ViewBag.Title = "Xóa đánh giá";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="delete-review-page">
+    <div class="container">
+        <div class="page-header">
+            <h1>Xác nhận xóa đánh giá</h1>
+        </div>
+
+        <div class="alert alert-warning">
+            <i class="fa fa-exclamation-triangle"></i>
+            Bạn có chắc chắn muốn xóa đánh giá này không? Hành động này không thể hoàn tác.
+        </div>
+
+        <div class="review-card">
+            <div class="review-product">
+                <div class="product-image">
+                    @if (Model.Product != null && !string.IsNullOrEmpty(Model.Product.image_url))
+                    {
+                        <img src="~/images/products/@Model.Product.image_url" alt="@Model.Product.name" />
+                    }
+                    else
+                    {
+                        <img src="~/images/products/default.jpg" alt="@(Model.Product != null ? Model.Product.name : "Sản phẩm")" />
+                    }
+                </div>
+                <div class="product-info">
+                    <h3>
+                        <a href="@Url.Action("Details", "Products", new { id = Model.product_id })">
+                            @Model.Product.name
+                        </a>
+                    </h3>
+                    <p class="review-date">Đánh giá vào: @Model.created_at.Value.ToString("dd/MM/yyyy HH:mm")</p>
+                </div>
+            </div>
+            <div class="review-content">
+                <div class="review-rating">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        <i class="fa @(i <= Model.rating ? "fa-star" : "fa-star-o")"></i>
+                    }
+                </div>
+                
+                <!-- Thêm hiển thị trạng thái đánh giá -->
+                <div class="review-status">
+                    @if (Model.status == "approved")
+                    {
+                        <span class="status-badge status-approved">Đã duyệt</span>
+                    }
+                    else if (Model.status == "pending")
+                    {
+                        <span class="status-badge status-pending">Đang chờ duyệt</span>
+                    }
+                    else if (Model.status == "rejected")
+                    {
+                        <span class="status-badge status-rejected">Đã từ chối</span>
+                    }
+                    else
+                    {
+                        <span class="status-badge">@(string.IsNullOrEmpty(Model.status) ? "Chưa xác định" : Model.status)</span>
+                    }
+                </div>
+                
+                <p class="review-comment">@Model.comment</p>
+            </div>
+        </div>
+
+        <!-- Sửa phần form để đảm bảo POST đúng -->
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "deleteForm" }))
+        {
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.id" />
+
+            <div class="form-actions">
+                <a href="@Url.Action("History", "Review")" class="btn btn-secondary">Hủy</a>
+                <button type="submit" class="btn btn-danger">Xác nhận xóa</button>
+            </div>
+        }
+    </div>
+</div>
+
+@section styles {
+    <link href="~/Content/css/review-style.css" rel="stylesheet" />
+}
+
+@section scripts {
+    <script>
+        console.log("Delete view loaded");
+        
+        $(document).ready(function() {
+            console.log("Document ready in Delete view");
+            
+            $("#deleteForm").submit(function(e) {
+                console.log("Form submitted");
+                // Uncomment dòng dưới nếu muốn ngăn form submit để debug
+                // e.preventDefault();
+            });
+            
+            $(".btn-danger").click(function() {
+                console.log("Delete button clicked");
+            });
+        });
+    </script>
+}

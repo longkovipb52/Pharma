@@ -1,0 +1,162 @@
+﻿@model PharmaPlus.Models.AdminContactEditViewModel
+@{
+    ViewBag.Title = "Phản hồi liên hệ";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    Response.ContentEncoding = System.Text.Encoding.UTF8;
+    Response.Charset = "utf-8";
+}
+
+<div class="admin-contact-edit">
+    <div class="back-link mb-3">
+        <a href="@Url.Action("Details", new { id = Model.Id })" class="btn btn-link">
+            <i class="fas fa-arrow-left"></i> Quay lại chi tiết
+        </a>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-reply"></i> Phản hồi liên hệ #@Model.Id
+            </h5>
+        </div>
+        
+        <div class="card-body">
+            <div class="contact-info mb-4">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="contact-field">
+                            <label>Người gửi:</label>
+                            <div>@Model.Name</div>
+                        </div>
+                        
+                        <div class="contact-field">
+                            <label>Email:</label>
+                            <div>@Model.Email</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="contact-field">
+                            <label>Ngày gửi:</label>
+                            <div>@(Model.CreatedAt.HasValue ? Model.CreatedAt.Value.ToString("dd/MM/yyyy HH:mm") : "")</div>
+                        </div>
+                        
+                        <div class="contact-field">
+                            <label>Tiêu đề:</label>
+                            <div>@Model.Subject</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="contact-field mt-3">
+                    <label>Nội dung:</label>
+                    <div class="contact-message">@Model.Message</div>
+                </div>
+            </div>
+            
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+                
+                <div class="form-horizontal">
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    @Html.HiddenFor(model => model.Id)
+                    
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Status, htmlAttributes: new { @class = "control-label" })
+                        <div>
+                            @Html.DropDownListFor(model => model.Status, Model.StatusOptions, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.AdminReply, htmlAttributes: new { @class = "control-label" })
+                        <div>
+                            @Html.TextAreaFor(model => model.AdminReply, new { @class = "form-control", rows = "6", placeholder = "Nhập nội dung phản hồi..." })
+                            @Html.ValidationMessageFor(model => model.AdminReply, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Lưu phản hồi
+                        </button>
+                        <a href="@Url.Action("Details", new { id = Model.Id })" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Hủy
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section styles {
+    <style>
+        .admin-contact-edit {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .card-title i {
+            color: #4e73df;
+            margin-right: 10px;
+        }
+        
+        .contact-info {
+            background-color: #f8f9fc;
+            border-radius: 0.35rem;
+            padding: 15px;
+        }
+        
+        .contact-field {
+            margin-bottom: 10px;
+        }
+        
+        .contact-field label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #4e73df;
+        }
+        
+        .contact-message {
+            background-color: white;
+            border: 1px solid #e3e6f0;
+            border-radius: 0.35rem;
+            padding: 15px;
+            min-height: 80px;
+            white-space: pre-line;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .control-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .form-actions {
+            margin-top: 30px;
+        }
+        
+        .form-actions .btn {
+            margin-right: 10px;
+        }
+        
+        .back-link a {
+            color: #4e73df;
+        }
+        
+        .back-link a:hover {
+            text-decoration: none;
+        }
+    </style>
+}
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

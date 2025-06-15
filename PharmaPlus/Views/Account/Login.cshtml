@@ -1,0 +1,114 @@
+﻿@model PharmaPlus.Models.LoginViewModel
+@{
+    ViewBag.Title = "Đăng nhập - PharmaPlus";
+    Layout = null;
+    Response.ContentEncoding = System.Text.Encoding.UTF8;
+    Response.Charset = "utf-8";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/Content/css/auth-style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="auth-page">
+    <!-- Floating Pills Animation -->
+    <div class="floating-pills">
+        <div class="pill"></div>
+        <div class="pill"></div>
+        <div class="pill"></div>
+        <div class="pill"></div>
+    </div>
+
+    <div class="auth-container">
+        <div class="auth-image">
+            <div class="auth-image-overlay">
+                <div class="auth-image-content">
+                    <div class="brand">
+                        <i class="fas fa-pills"></i>
+                        <span>PharmaPlus</span>
+                    </div>
+                    <h2>Chào mừng trở lại!</h2>
+                    <p>Đăng nhập để truy cập tài khoản của bạn, theo dõi đơn hàng và quản lý thông tin thuốc của bạn.</p>
+                    <p>Chưa có tài khoản? <a href="@Url.Action("Register", "Account")">Đăng ký ngay</a>.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="auth-form">
+            <h1>Đăng nhập</h1>
+            <p class="subtitle">Nhập thông tin để tiếp tục</p>
+            
+            @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @class = "login-form" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true, "", new { @class = "validation-summary-errors" })
+                
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Username, "Tên đăng nhập hoặc Email")
+                    @Html.TextBoxFor(m => m.Username, new { @class = "form-control", @placeholder = "Nhập tên đăng nhập hoặc email" })
+                    @Html.ValidationMessageFor(m => m.Username, "", new { @class = "field-validation-error" })
+                </div>
+                
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Password, "Mật khẩu")
+                    @Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = "Nhập mật khẩu" })
+                    @Html.ValidationMessageFor(m => m.Password, "", new { @class = "field-validation-error" })
+                </div>
+                
+                <div class="form-check">
+                    @Html.CheckBoxFor(m => m.RememberMe, new { @id = "rememberMe" })
+                    @Html.LabelFor(m => m.RememberMe, "Ghi nhớ đăng nhập", new { @for = "rememberMe" })
+                </div>
+                
+                <button type="submit" class="auth-btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Đăng nhập
+                </button>
+                
+                <div class="auth-links">
+                    <p>Chưa có tài khoản? <a href="@Url.Action("Register", "Account")">Đăng ký ngay</a></p>
+                    <a href="@Url.Action("Index", "Home")" class="back-home">
+                        <i class="fas fa-home"></i>
+                        Quay về trang chủ
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+
+    <script>
+        // Enhanced form interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('.form-control');
+            const submitBtn = document.querySelector('.auth-btn');
+            
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.classList.add('focused');
+                });
+                
+                input.addEventListener('blur', function() {
+                    if (!this.value) {
+                        this.parentElement.classList.remove('focused');
+                    }
+                });
+            });
+            
+            // Loading state on form submit
+            document.querySelector('.login-form').addEventListener('submit', function() {
+                submitBtn.classList.add('loading');
+                submitBtn.disabled = true;
+            });
+        });
+    </script>
+</body>
+</html>

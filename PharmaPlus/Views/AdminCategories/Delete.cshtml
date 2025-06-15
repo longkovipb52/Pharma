@@ -1,0 +1,157 @@
+﻿@model PharmaPlus.Models.CategoryViewModel
+@{
+    ViewBag.Title = "Xóa danh mục";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    Response.ContentEncoding = System.Text.Encoding.UTF8;
+    Response.Charset = "utf-8";
+}
+
+<div class="admin-category-delete">
+    <div class="back-link">
+        <a href="@Url.Action("Index")" class="btn btn-link">
+            <i class="fas fa-arrow-left"></i> Quay lại danh sách
+        </a>
+    </div>
+    
+    <div class="card">
+        <div class="card-header bg-danger text-white">
+            <h1 class="card-title"><i class="fas fa-exclamation-triangle"></i> Xác nhận xóa danh mục</h1>
+        </div>
+        
+        <div class="card-body">
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle"></i> @TempData["ErrorMessage"]
+                </div>
+            }
+            
+            <div class="alert alert-warning">
+                <p><strong>Cảnh báo:</strong> Bạn đang chuẩn bị xóa danh mục này. Hành động này không thể hoàn tác.</p>
+            </div>
+            
+            <div class="category-info">
+                <div class="info-item">
+                    <span class="info-label">ID:</span>
+                    <span class="info-value">@Model.Id</span>
+                </div>
+                
+                <div class="info-item">
+                    <span class="info-label">Tên danh mục:</span>
+                    <span class="info-value">@Model.Name</span>
+                </div>
+                
+                <div class="info-item">
+                    <span class="info-label">Mô tả:</span>
+                    <div class="info-value description">
+                        @if (!string.IsNullOrEmpty(Model.Description))
+                        {
+                            @Model.Description
+                        }
+                        else
+                        {
+                            <span class="text-muted">Không có mô tả</span>
+                        }
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <span class="info-label">Số lượng sản phẩm:</span>
+                    <span class="info-value badge bg-primary">@Model.ProductCount</span>
+                </div>
+            </div>
+            
+            @if (Model.ProductCount > 0)
+            {
+                <div class="alert alert-danger mt-4">
+                    <i class="fas fa-exclamation-triangle"></i> Danh mục này đang chứa @Model.ProductCount sản phẩm. Bạn cần di chuyển hoặc xóa các sản phẩm trước khi xóa danh mục.
+                </div>
+            }
+            else
+            {
+                using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Xác nhận xóa
+                        </button>
+                        <a href="@Url.Action("Index")" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Hủy bỏ
+                        </a>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+@section styles {
+    <style>
+        .admin-category-delete {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .back-link {
+            margin-bottom: 15px;
+        }
+        
+        .card-title {
+            margin-bottom: 0;
+            font-size: 1.5rem;
+        }
+        
+        .category-info {
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .info-item {
+            margin-bottom: 15px;
+        }
+        
+        .info-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            display: inline-block;
+            width: 150px;
+        }
+        
+        .info-value {
+            display: inline-block;
+        }
+        
+        .info-value.description {
+            margin-top: 10px;
+            white-space: pre-wrap;
+        }
+        
+        .form-actions {
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        .form-actions .btn {
+            margin: 0 5px;
+            min-width: 150px;
+        }
+        
+        .badge {
+            padding: 0.25em 0.6em;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 0.35rem;
+        }
+        
+        .bg-primary {
+            background-color: #4e73df;
+        }
+    </style>
+}

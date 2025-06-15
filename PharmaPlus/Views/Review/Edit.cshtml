@@ -1,0 +1,101 @@
+﻿@model PharmaPlus.Models.Review
+@{
+    ViewBag.Title = "Chỉnh sửa đánh giá";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    Response.ContentEncoding = System.Text.Encoding.UTF8;
+    Response.Charset = "utf-8";
+}
+
+<div class="review-form-container">
+    <div class="container">
+        <div class="page-header">
+            <h1>Chỉnh sửa đánh giá</h1>
+        </div>
+
+        <div class="product-info">
+            <div class="product-image">
+                @if (!string.IsNullOrEmpty(Model.Product.image_url))
+                {
+                    <img src="~/images/products/@Model.Product.image_url" 
+                         alt="@Model.Product.name" 
+                         onerror="this.onerror=null; this.src='/images/products/default.jpg';" />
+                }
+                else
+                {
+                    <img src="~/images/products/default.jpg" alt="@Model.Product.name" />
+                }
+            </div>
+            <div class="product-details">
+                <h3>@Model.Product.name</h3>
+                <p class="price">@string.Format("{0:#,##0}", Model.Product.price) VNĐ</p>
+            </div>
+        </div>
+
+        @using (Html.BeginForm("SubmitReview", "Review", FormMethod.Post, new { @class = "review-form" }))
+        {
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="productId" value="@Model.product_id" />
+
+            <div class="form-group">
+                <label>Đánh giá của bạn</label>
+                <div class="rating-input">
+                    <div class="rating-stars">
+                        @for (int i = 5; i >= 1; i--)
+                        {
+                            <input type="radio" id="star@(i)" name="rating" value="@i" @(Model.rating == i ? "checked" : "") required />
+                            <label for="star@(i)" title="@i sao">@i sao</label>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="comment">Nhận xét của bạn</label>
+                <textarea name="comment" id="comment" rows="5" class="form-control" required>@Model.comment</textarea>
+            </div>
+
+            <div class="form-group submit-group">
+                <a href="@Url.Action("History", "Review")" class="btn btn-secondary">Hủy</a>
+                <button type="submit" class="btn btn-primary">Cập nhật đánh giá</button>
+            </div>
+        }
+    </div>
+</div>
+
+@section styles {
+    <link href="~/Content/css/review-style.css" rel="stylesheet" />
+}
+
+@section scripts {
+    <script src="~/Scripts/js/review-script.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Thêm hiệu ứng animationDelay cho product-info
+            setTimeout(function() {
+                $('.product-info').addClass('animated');
+            }, 300);
+            
+            // Hiển thị text dựa trên rating hiện tại
+            let currentRating = $('input[name="rating"]:checked').val();
+            if (currentRating) {
+                let ratingText = '';
+                switch(parseInt(currentRating)) {
+                    case 1: ratingText = 'Rất không hài lòng'; break;
+                    case 2: ratingText = 'Không hài lòng'; break;
+                    case 3: ratingText = 'Bình thường'; break;
+                    case 4: ratingText = 'Hài lòng'; break;
+                    case 5: ratingText = 'Rất hài lòng'; break;
+                }
+                
+                $('<div class="rating-text">' + ratingText + '</div>').appendTo('.rating-input').addClass('show');
+            }
+            
+            // Hiệu ứng submit form
+            $('.review-form').on('submit', function() {
+                $(this).addClass('submitting');
+                $('.btn-primary').prepend('<i class="fa fa-spinner fa-spin submit-spinner"></i> ');
+                return true;
+            });
+        });
+    </script>
+}

@@ -1,0 +1,141 @@
+﻿@model PharmaPlus.Models.ContactHistoryViewModel
+@{
+    ViewBag.Title = "Lịch sử liên hệ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    Response.ContentEncoding = System.Text.Encoding.UTF8;
+    Response.Charset = "utf-8";
+}
+
+<div class="contact-history-page">
+    <div class="contact-bg">
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="contact-header" data-aos="fade-up">
+            <h1 class="contact-title">Lịch sử liên hệ</h1>
+            <p class="contact-description">Xem lại các yêu cầu liên hệ bạn đã gửi và phản hồi từ đội ngũ PharmaPlus</p>
+        </div>
+
+        <div class="history-actions" data-aos="fade-up">
+            <a href="@Url.Action("Index", "Contact")" class="btn-new-contact">
+                <i class="fas fa-plus"></i>
+                <span>Tạo liên hệ mới</span>
+            </a>
+            
+            <div class="history-stats">
+                <div class="stat-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>Tổng số: <strong>@Model.TotalContacts</strong></span>
+                </div>
+                
+                <div class="stat-item @(Model.HasAnsweredContacts ? "answered" : "")">
+                    <i class="fas fa-envelope-open-text"></i>
+                    <span>Đã phản hồi: <strong>@Model.Contacts.Count(c => c.Status == "Đã phản hồi")</strong></span>
+                </div>
+                
+                <div class="stat-item pending">
+                    <i class="fas fa-clock"></i>
+                    <span>Chờ phản hồi: <strong>@Model.Contacts.Count(c => c.Status == "Chưa phản hồi")</strong></span>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.Contacts.Any())
+        {
+            <div class="contact-history-list">
+                @foreach (var contact in Model.Contacts)
+                {
+                    <div class="contact-card @contact.StatusClass" data-aos="fade-up" data-aos-delay="@(Model.Contacts.IndexOf(contact) * 100)">
+                        <div class="contact-card-header">
+                            <div class="contact-subject">
+                                <h3>@contact.Subject</h3>
+                                <span class="status-badge @contact.StatusClass">@contact.Status</span>
+                            </div>
+                            <div class="contact-date">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>@contact.FormattedCreatedAt</span>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-message">
+                            <div class="message-icon">
+                                <i class="fas fa-comment-dots"></i>
+                            </div>
+                            <div class="message-content">
+                                <h4>Tin nhắn của bạn:</h4>
+                                <p>@contact.Message</p>
+                            </div>
+                        </div>
+                        
+                        @if (contact.Status == "Đã phản hồi" && !string.IsNullOrEmpty(contact.Response))
+                        {
+                            <div class="contact-response">
+                                <div class="response-icon">
+                                    <i class="fas fa-reply"></i>
+                                </div>
+                                <div class="response-content">
+                                    <h4>Phản hồi từ PharmaPlus:</h4>
+                                    <p>@contact.Response</p>
+                                    <div class="response-date">
+                                        <i class="fas fa-clock"></i>
+                                        <span>@contact.FormattedRespondedAt</span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="contact-pending">
+                                <div class="pending-icon">
+                                    <i class="fas fa-hourglass-half"></i>
+                                </div>
+                                <div class="pending-content">
+                                    <p>Chúng tôi đang xem xét liên hệ của bạn và sẽ phản hồi sớm nhất có thể.</p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="empty-history" data-aos="fade-up">
+                <div class="empty-icon">
+                    <i class="fas fa-inbox"></i>
+                </div>
+                <h3>Bạn chưa có liên hệ nào</h3>
+                <p>Hãy tạo liên hệ mới để nhận được hỗ trợ từ đội ngũ PharmaPlus</p>
+                <a href="@Url.Action("Index", "Contact")" class="btn-create-contact">
+                    <i class="fas fa-plus"></i>
+                    <span>Tạo liên hệ mới</span>
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+@section styles {
+    <link rel="stylesheet" href="~/Content/css/contact-style.css" />
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
+}
+
+@section scripts {
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="~/Scripts/js/contact-script.js"></script>
+    <script>
+        $(document).ready(function() {
+            AOS.init({
+                duration: 800,
+                easing: 'ease-out-cubic',
+                once: true,
+                offset: 50
+            });
+        });
+    </script>
+}

@@ -1,0 +1,291 @@
+﻿@model PharmaPlus.Models.AdminReviewDetailsViewModel
+@{
+    ViewBag.Title = "Chi tiết đánh giá";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    Response.ContentEncoding = System.Text.Encoding.UTF8;
+    Response.Charset = "utf-8";
+}
+
+<div class="admin-review-details">
+    <div class="back-link">
+        <a href="@Url.Action("Index")" class="btn btn-link">
+            <i class="fas fa-arrow-left"></i> Quay lại danh sách
+        </a>
+    </div>
+    
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+    
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between">
+            <h1 class="card-title">Chi tiết đánh giá #@Model.Id</h1>
+            <div class="header-actions">
+                <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-primary">
+                    <i class="fas fa-edit"></i> Chỉnh sửa
+                </a>
+                <a href="@Url.Action("Delete", new { id = Model.Id })" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> Xóa
+                </a>
+            </div>
+        </div>
+        
+        <div class="card-body">
+            <div class="review-status-actions mb-4">
+                <div class="current-status">
+                    <span class="status-label">Trạng thái hiện tại:</span>
+                    <span class="@Model.StatusClass">@Model.StatusText</span>
+                </div>
+                
+                <div class="status-actions">
+                    @if (Model.Status != "approved")
+                    {
+                        using (Html.BeginForm("ApproveReview", "AdminReviews", FormMethod.Post, new { style = "display: inline;" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-check"></i> Duyệt đánh giá
+                            </button>
+                        }
+                    }
+                    
+                    @if (Model.Status != "rejected")
+                    {
+                        using (Html.BeginForm("RejectReview", "AdminReviews", FormMethod.Post, new { style = "display: inline; margin-left: 10px;" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-times"></i> Từ chối đánh giá
+                            </button>
+                        }
+                    }
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="review-info-card">
+                        <h5 class="info-title">
+                            <i class="fas fa-star"></i> Thông tin đánh giá
+                        </h5>
+                        <div class="info-body">
+                            <div class="info-item">
+                                <span class="info-label">Đánh giá:</span>
+                                <span class="info-value">@Html.Raw(Model.RatingStars)</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Ngày tạo:</span>
+                                <span class="info-value">@Model.FormattedCreatedAt</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Nội dung:</span>
+                                <div class="info-content mt-2">
+                                    @Model.Comment
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="review-info-card">
+                        <h5 class="info-title">
+                            <i class="fas fa-user"></i> Thông tin người dùng
+                        </h5>
+                        <div class="info-body">
+                            <div class="info-item">
+                                <span class="info-label">Người dùng:</span>
+                                <span class="info-value">
+                                    <a href="@Url.Action("Details", "AdminUsers", new { id = Model.UserId })">
+                                        @Model.UserName
+                                    </a>
+                                </span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Email:</span>
+                                <span class="info-value">@Model.UserEmail</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="review-info-card mt-4">
+                        <h5 class="info-title">
+                            <i class="fas fa-box"></i> Thông tin sản phẩm
+                        </h5>
+                        <div class="info-body">
+                            <div class="product-details">
+                                @if (!string.IsNullOrEmpty(Model.ProductImage))
+                                {
+                                    <div class="product-image">
+                                        <img src="~/images/products/@Model.ProductImage" alt="@Model.ProductName" />
+                                    </div>
+                                }
+                                <div class="product-info">
+                                    <h5 class="product-name">
+                                        <a href="@Url.Action("Details", "AdminProducts", new { id = Model.ProductId })">
+                                            @Model.ProductName
+                                        </a>
+                                    </h5>
+                                    <div class="product-price">@Model.FormattedProductPrice</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section styles {
+    <style>
+        .admin-review-details {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .back-link {
+            margin-bottom: 15px;
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-title {
+            margin-bottom: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .header-actions .btn {
+            margin-left: 10px;
+        }
+        
+        .review-status-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background-color: #f8f9fc;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .status-label {
+            font-weight: 600;
+            margin-right: 10px;
+        }
+        
+        .badge {
+            padding: 0.4em 0.8em;
+            font-size: 0.8rem;
+            font-weight: 700;
+            border-radius: 0.35rem;
+        }
+        
+        .review-info-card {
+            background-color: #f8f9fc;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .info-title {
+            background-color: #4e73df;
+            color: white;
+            padding: 10px 15px;
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        .info-title i {
+            margin-right: 8px;
+        }
+        
+        .info-body {
+            padding: 15px;
+        }
+        
+        .info-item {
+            margin-bottom: 12px;
+        }
+        
+        .info-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            min-width: 100px;
+            display: inline-block;
+        }
+        
+        .info-content {
+            background-color: white;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #e3e6f0;
+            min-height: 100px;
+        }
+        
+        .product-details {
+            display: flex;
+            align-items: center;
+        }
+        
+        .product-image {
+            width: 80px;
+            height: 80px;
+            overflow: hidden;
+            margin-right: 15px;
+            border-radius: 5px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .product-image img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .product-name {
+            margin-bottom: 5px;
+            font-size: 1rem;
+        }
+        
+        .product-price {
+            font-weight: 600;
+            color: #e74a3b;
+        }
+        
+        .bg-success {
+            background-color: #1cc88a !important;
+        }
+        
+        .bg-warning {
+            background-color: #f6c23e !important;
+        }
+        
+        .bg-danger {
+            background-color: #e74a3b !important;
+        }
+        
+        .text-warning {
+            color: #f6c23e !important;
+        }
+    </style>
+}

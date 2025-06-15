@@ -1,0 +1,172 @@
+/* Reset CSS để tránh xung đột */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    line-height: 1.6;
+}
+
+/* Reset conflicts between home-style.css and products-style.css */
+
+/* Header */
+.header {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1000 !important;
+    background: rgba(255, 255, 255, 0.98) !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Container size consistency */
+.container, .products-container {
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+    padding: 0 20px !important;
+}
+
+/* Button styling consistency */
+.btn, .products-btn-add-cart, .add-to-cart-btn {
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+}
+
+/* Modal positioning fix */
+.cart-modal, .products-modal, .quickview-modal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    display: none !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 10000 !important;
+}
+
+.cart-modal.show, .products-modal.show, .quickview-modal.show {
+    display: flex !important;
+}
+
+/* Card styling consistency */
+.product-card, .products-card {
+    border-radius: 16px !important;
+    overflow: hidden !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05) !important;
+    transition: all 0.3s ease !important;
+}
+
+/* Body padding consistency */
+body {
+    padding-top: 70px !important;
+}
+
+/* Thêm animation cho thông báo */
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+@keyframes progressShrink {
+    from {
+        width: 100%;
+    }
+    to {
+        width: 0%;
+    }
+}
+
+/* Toast notification styles */
+.toast-notification, .cart-toast-notification {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    padding: 16px 20px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    z-index: 11000;
+    min-width: 320px;
+    max-width: 420px;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
+    overflow: hidden;
+}
+
+.toast-notification.toast-success,
+.cart-toast-notification.toast-success {
+    background: #10b981;
+    color: white;
+}
+
+.toast-notification.toast-error,
+.cart-toast-notification.toast-error {
+    background: #ef4444;
+    color: white;
+}
+
+.toast-notification.toast-warning,
+.cart-toast-notification.toast-warning {
+    background: #f59e0b;
+    color: white;
+}
+
+.toast-notification.toast-info,
+.cart-toast-notification.toast-info {
+    background: #3b82f6;
+    color: white;
+}
+
+.toast-content, .notification-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.toast-progress-bar, .notification-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.5);
+    width: 100%;
+}
+
+.toast-close-btn, .notification-close {
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 0;
+    margin-left: auto;
+    font-size: 16px;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.toast-close-btn:hover, .notification-close:hover {
+    opacity: 1;
+}

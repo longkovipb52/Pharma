@@ -1,0 +1,316 @@
+﻿@model PharmaPlus.Models.AdminDashboardViewModel
+@{
+    ViewBag.Title = "Dashboard";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    Response.ContentEncoding = System.Text.Encoding.UTF8;
+    Response.Charset = "utf-8";
+}
+
+<div class="admin-dashboard">
+    <h1 class="page-title">
+        <i class="fas fa-tachometer-alt"></i> Dashboard
+    </h1>
+    
+    <!-- Thông tin tổng quan -->
+    <div class="stats-cards">
+        <div class="stat-card">
+            <div class="stat-card-icon bg-primary">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+            <div class="stat-card-info">
+                <p class="stat-card-title">Tổng đơn hàng</p>
+                <h2 class="stat-card-value">@Model.TotalOrders</h2>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-card-icon bg-success">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-card-info">
+                <p class="stat-card-title">Khách hàng</p>
+                <h2 class="stat-card-value">@Model.TotalUsers</h2>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-card-icon bg-info">
+                <i class="fas fa-pills"></i>
+            </div>
+            <div class="stat-card-info">
+                <p class="stat-card-title">Sản phẩm</p>
+                <h2 class="stat-card-value">@Model.TotalProducts</h2>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-card-icon bg-warning">
+                <i class="fas fa-money-bill-wave"></i>
+            </div>
+            <div class="stat-card-info">
+                <p class="stat-card-title">Doanh thu</p>
+                <h2 class="stat-card-value">@String.Format("{0:#,##0}", Model.TotalRevenue) VNĐ</h2>
+            </div>
+        </div>
+    </div>
+    
+    <div class="dashboard-content">
+        <!-- Đơn hàng mới nhất -->
+        <div class="dashboard-card">
+            <div class="dashboard-card-header">
+                <h3><i class="fas fa-shopping-cart"></i> Đơn hàng mới nhất</h3>
+                <a href="@Url.Action("Index", "AdminOrders")" class="view-all">Xem tất cả</a>
+            </div>
+            <div class="dashboard-card-body">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Mã đơn</th>
+                            <th>Khách hàng</th>
+                            <th>Tổng tiền</th>
+                            <th>Trạng thái</th>
+                            <th>Ngày tạo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.RecentOrders.Any())
+                        {
+                            foreach (var order in Model.RecentOrders)
+                            {
+                                <tr>
+                                    <td><a href="@Url.Action("Edit", "AdminOrders", new { id = order.id })">DH@(order.id.ToString("D6"))</a></td>
+                                    <td>@order.recipient_name</td>
+                                    <td>@String.Format("{0:#,##0}", order.total_price) VNĐ</td>
+                                    <td><span class="status-badge @GetStatusClass(order.status)">@order.status</span></td>
+                                    <td>@FormatDateTime(order.created_at)</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center">Không có đơn hàng nào.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Sản phẩm sắp hết hàng & hết hàng -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <div class="dashboard-card-header">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Sản phẩm sắp hết hàng</h3>
+                    </div>
+                    <div class="dashboard-card-body">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Tồn kho</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.LowStockProducts.Any())
+                                {
+                                    foreach (var product in Model.LowStockProducts)
+                                    {
+                                        <tr>
+                                            <td>@product.name</td>
+                                            <td><span class="low-stock-badge">@product.stock</span></td>
+                                            <td>
+                                                <a href="@Url.Action("Edit", "AdminProducts", new { id = product.id })" class="btn-sm btn-primary">
+                                                    <i class="fas fa-edit"></i> Cập nhật
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="3" class="text-center">Không có sản phẩm sắp hết hàng.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <div class="dashboard-card-header">
+                        <h3><i class="fas fa-times-circle"></i> Sản phẩm hết hàng</h3>
+                    </div>
+                    <div class="dashboard-card-body">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Giá</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.OutOfStockProducts.Any())
+                                {
+                                    foreach (var product in Model.OutOfStockProducts)
+                                    {
+                                        <tr>
+                                            <td>@product.name</td>
+                                            <td>@String.Format("{0:#,##0}", product.price) VNĐ</td>
+                                            <td>
+                                                <a href="@Url.Action("Edit", "AdminProducts", new { id = product.id })" class="btn-sm btn-primary">
+                                                    <i class="fas fa-edit"></i> Cập nhật
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="3" class="text-center">Không có sản phẩm hết hàng.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Đánh giá mới & Liên hệ chưa phản hồi -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <div class="dashboard-card-header">
+                        <h3><i class="fas fa-star"></i> Đánh giá mới nhất</h3>
+                        <a href="@Url.Action("Index", "AdminReviews")" class="view-all">Xem tất cả</a>
+                    </div>
+                    <div class="dashboard-card-body">
+                        @if (Model.RecentReviews.Any())
+                        {
+                            foreach (var review in Model.RecentReviews)
+                            {
+                                <div class="review-item">
+                                    <div class="review-header">
+                                        <div class="review-user">
+                                            <i class="fas fa-user-circle"></i>
+                                            <span>@(review.User != null ? review.User.full_name : "Khách hàng")</span>
+                                        </div>
+                                        <div class="review-rating">
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                <i class="fas fa-star @(i <= review.rating ? "active" : "")"></i>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="review-product">
+                                        <span>Sản phẩm: <strong>@(review.Product != null ? review.Product.name : "Sản phẩm")</strong></span>
+                                    </div>
+                                    <div class="review-comment">
+                                        @review.comment
+                                    </div>
+                                    <div class="review-date">
+                                        @FormatDateTime(review.created_at)
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p class="text-center">Không có đánh giá nào.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <div class="dashboard-card-header">
+                        <h3><i class="fas fa-envelope"></i> Liên hệ chưa phản hồi</h3>
+                        <a href="@Url.Action("Index", "AdminContacts")" class="view-all">Xem tất cả</a>
+                    </div>
+                    <div class="dashboard-card-body">
+                        @if (Model.UnreadContacts.Any())
+                        {
+                            foreach (var contact in Model.UnreadContacts)
+                            {
+                                <div class="contact-item">
+                                    <div class="contact-header">
+                                        <div class="contact-user">
+                                            <i class="fas fa-user"></i>
+                                            <span>@contact.name</span>
+                                        </div>
+                                        <div class="contact-date">
+                                            @FormatDateTime(contact.created_at)
+                                        </div>
+                                    </div>
+                                    <div class="contact-subject">
+                                        <strong>@contact.subject</strong>
+                                    </div>
+                                    <div class="contact-message">
+                                        @(contact.message.Length > 100 ? contact.message.Substring(0, 100) + "..." : contact.message)
+                                    </div>
+                                    <div class="contact-actions">
+                                        <a href="@Url.Action("Edit", "AdminContacts", new { id = contact.id })" class="btn-sm btn-primary">
+                                            <i class="fas fa-reply"></i> Phản hồi
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p class="text-center">Không có liên hệ nào cần phản hồi.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    string GetStatusClass(string status)
+    {
+        // Sử dụng if-else thay vì switch expression và or pattern
+        if (status == "Đã hủy")
+            return "status-cancelled";
+        else if (status == "Hoàn trả")
+            return "status-returned";
+        else if (status == "Đã hoàn thành")
+            return "status-completed";
+        else if (status == "Đã giao hàng")
+            return "status-delivered";
+        else if (status == "Đang giao hàng")
+            return "status-shipping";
+        else if (status == "Đã xác nhận")
+            return "status-confirmed";
+        else if (status == "Chờ xử lý" || status == "Chưa xử lý") // Sử dụng || thay vì or pattern
+            return "status-pending";
+        else
+            return "status-pending";
+    }
+    
+    // Thêm hàm định dạng thời gian
+    string FormatDateTime(DateTime? dateTime)
+    {
+        if (!dateTime.HasValue)
+            return "";
+            
+        try 
+        {
+            return dateTime.Value.ToString("dd/MM/yyyy HH:mm", System.Globalization.CultureInfo.InvariantCulture);
+        }
+        catch
+        {
+            return dateTime.HasValue ? dateTime.Value.ToString() : "";
+        }
+    }
+}

@@ -1,0 +1,119 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- CSS Reset LOAD FIRST -->
+    <link href="~/Content/css/style-reset.css" rel="stylesheet" />
+    
+    <!-- Base Styles -->
+    <link href="~/Content/css/home-style.css" rel="stylesheet" />
+    
+    <!-- Feature Styles -->
+    <link href="~/Content/css/products-style.css" rel="stylesheet" />
+    <link href="~/Content/css/cart-style.css" rel="stylesheet" />
+    
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    
+    <!-- Thêm CSS đặc biệt cho từng trang nếu cần -->
+    @RenderSection("styles", required: false)
+</head>
+<!-- Thêm class body tùy theo controller -->
+<body class="@(ViewContext.RouteData.Values["Controller"].ToString().ToLower())-page">
+    <!-- Header -->
+    @Html.Partial("_Header")
+    
+    <!-- Main content container -->
+    <main class="main-content">
+        @RenderBody()
+    </main>
+    
+    <!-- Footer -->
+    @Html.Partial("_Footer")
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <div class="notification-content">
+            <i class="fas fa-check-circle"></i>
+            <span id="notificationText">Thành công!</span>
+        </div>
+    </div>
+
+    <!-- Cart Modal - Sửa cấu trúc -->
+    <div id="cartModal" class="cart-modal">
+        <div class="cart-modal-content" style="display: flex; flex-direction: column; overflow: hidden;">
+            <div class="cart-modal-header" style="flex: 0 0 auto;">
+                <h3><i class="fas fa-shopping-cart"></i> Giỏ hàng</h3>
+                <button class="cart-modal-close" onclick="closeCartModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="cart-modal-body" id="cartModalBody" style="flex: 1 1 auto; overflow-y: auto; max-height: none;">
+                <!-- Cart items will be loaded here -->
+            </div>
+            <div class="cart-modal-footer" id="cartModalFooter" style="flex: 0 0 auto;">
+                <div class="cart-modal-total">
+                    <span>Tổng cộng:</span>
+                    <span id="modalTotalAmount">0 VNĐ</span>
+                </div>
+                <div class="cart-modal-actions">
+                    <button class="btn btn-outline" onclick="clearAllCart()">
+                        <i class="fas fa-trash"></i> Xóa giỏ hàng
+                    </button>
+                    <button class="btn btn-primary" onclick="proceedToCheckout()">
+                        <i class="fas fa-check"></i> Thanh toán
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts với thứ tự chính xác -->
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+
+    <!-- QUAN TRỌNG: Cart script load trước mọi thứ -->
+    <script src="~/Scripts/js/cart-script.js"></script>
+
+    <!-- Home script chỉ load cho trang Home -->
+    @if (ViewContext.RouteData.Values["Controller"].ToString().ToLower() == "home")
+    {
+        <script src="~/Scripts/js/home-script-fixed.js"></script>
+    }
+
+    <!-- Page specific scripts -->
+    @RenderSection("scripts", required: false)
+
+    <script>
+    // Global initialization
+    $(document).ready(function() {
+        console.log('✅ Layout scripts loaded');
+        
+        // Ensure cart system works
+        setTimeout(function() {
+            if (typeof window.updateCartBadgeFromServer === 'function') {
+                window.updateCartBadgeFromServer();
+            }
+        }, 1000);
+    });
+    </script>
+
+    @using (Html.BeginForm("Dummy", "Home", FormMethod.Post, new { id = "antiforgery-holder", style = "display:none;" }))
+    {
+        @Html.AntiForgeryToken()
+    }
+
+    <!-- Thêm vào cuối file, ngay trước </body> -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

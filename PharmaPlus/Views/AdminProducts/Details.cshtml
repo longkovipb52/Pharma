@@ -1,0 +1,496 @@
+﻿@model PharmaPlus.Models.ProductDetailsViewModel
+@{
+    ViewBag.Title = "Chi tiết sản phẩm";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    Response.ContentEncoding = System.Text.Encoding.UTF8;
+    Response.Charset = "utf-8";
+}
+
+<div class="product-details-page">
+    <div class="back-link">
+        <a href="@Url.Action("Index")" class="btn btn-link">
+            <i class="fas fa-arrow-left"></i> Quay lại danh sách
+        </a>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h1 class="card-title"><i class="fas fa-info-circle"></i> Chi tiết sản phẩm</h1>
+            <div class="card-actions">
+                <a href="@Url.Action("Edit", new { id = Model.Product.id })" class="btn btn-primary">
+                    <i class="fas fa-edit"></i> Chỉnh sửa
+                </a>
+            </div>
+        </div>
+        
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="product-image-container">
+                        @if (!string.IsNullOrEmpty(Model.Product.image_url))
+                        {
+                            <img src="@Url.Content("~/images/products/" + Model.Product.image_url)" alt="@Model.Product.name" class="product-image" />
+                        }
+                        else
+                        {
+                            <div class="no-image">
+                                <i class="fas fa-image"></i>
+                                <p>Không có hình ảnh</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+                
+                <div class="col-md-8">
+                    <div class="product-info">
+                        <h2 class="product-name">@Model.Product.name</h2>
+                        
+                        <div class="product-meta">
+                            <div class="meta-item">
+                                <span class="meta-label">Danh mục:</span>
+                                <span class="meta-value">@(Model.Product.Category != null ? Model.Product.Category.name : "Không có")</span>
+                            </div>
+                            
+                            <div class="meta-item">
+                                <span class="meta-label">Giá:</span>
+                                <span class="meta-value price">@String.Format("{0:#,##0}", Model.Product.price) VNĐ</span>
+                            </div>
+                            
+                            <div class="meta-item">
+                                <span class="meta-label">Tồn kho:</span>
+                                <span class="meta-value">
+                                    @if (Model.Product.stock == 0)
+                                    {
+                                        <span class="badge badge-danger">Hết hàng</span>
+                                    }
+                                    else if (Model.Product.stock <= 10)
+                                    {
+                                        <span class="badge badge-warning">@Model.Product.stock</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-success">@Model.Product.stock</span>
+                                    }
+                                </span>
+                            </div>
+                            
+                            <div class="meta-item">
+                                <span class="meta-label">Yêu cầu đơn thuốc:</span>
+                                <span class="meta-value">
+                                    @if (Model.Product.prescription_required == true)
+                                    {
+                                        <span class="badge badge-info"><i class="fas fa-prescription"></i> Yêu cầu</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Không</span>
+                                    }
+                                </span>
+                            </div>
+                            
+                            <div class="meta-item">
+                                <span class="meta-label">Ngày tạo:</span>
+                                <span class="meta-value">@(Model.Product.created_at.HasValue ? Model.Product.created_at.Value.ToString("dd/MM/yyyy HH:mm") : "")</span>
+                            </div>
+                        </div>
+                        
+                        <div class="product-description">
+                            <h4>Mô tả sản phẩm</h4>
+                            <div class="description-content">
+                                @if (!string.IsNullOrEmpty(Model.Product.description))
+                                {
+                                    <p>@Model.Product.description</p>
+                                }
+                                else
+                                {
+                                    <p class="no-data">Không có mô tả</p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <hr />
+            
+            <div class="product-stats">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="stat-card bg-info">
+                            <div class="stat-card-body">
+                                <div class="stat-card-icon">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </div>
+                                <div class="stat-card-content">
+                                    <h3 class="stat-card-value">@Model.TotalSold</h3>
+                                    <p class="stat-card-title">Đã bán</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <div class="stat-card bg-success">
+                            <div class="stat-card-body">
+                                <div class="stat-card-icon">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                </div>
+                                <div class="stat-card-content">
+                                    <h3 class="stat-card-value">@String.Format("{0:#,##0}", Model.TotalRevenue) VNĐ</h3>
+                                    <p class="stat-card-title">Doanh thu</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <div class="stat-card bg-warning">
+                            <div class="stat-card-body">
+                                <div class="stat-card-icon">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <div class="stat-card-content">
+                                    <h3 class="stat-card-value">@Model.AverageRating.ToString("0.0")</h3>
+                                    <p class="stat-card-title">Đánh giá trung bình</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <div class="stat-card bg-primary">
+                            <div class="stat-card-body">
+                                <div class="stat-card-icon">
+                                    <i class="fas fa-comments"></i>
+                                </div>
+                                <div class="stat-card-content">
+                                    <h3 class="stat-card-value">@Model.Reviews.Count</h3>
+                                    <p class="stat-card-title">Lượt đánh giá</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="product-reviews">
+                <h3 class="section-title"><i class="fas fa-star"></i> Đánh giá của khách hàng</h3>
+                
+                @if (Model.Reviews.Any())
+                {
+                    <div class="reviews-list">
+                        @foreach (var review in Model.Reviews)
+                        {
+                            <div class="review-item">
+                                <div class="review-header">
+                                    <div class="review-author">
+                                        <i class="fas fa-user-circle"></i>
+                                        <span>@(review.User != null ? review.User.full_name : "Khách hàng")</span>
+                                    </div>
+                                    
+                                    <div class="review-rating">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            <i class="fas fa-star @(i <= review.rating ? "active" : "")"></i>
+                                        }
+                                    </div>
+                                    
+                                    <div class="review-date">
+                                        @(review.created_at.HasValue ? review.created_at.Value.ToString("dd/MM/yyyy HH:mm") : "")
+                                    </div>
+                                </div>
+                                
+                                <div class="review-content">
+                                    @review.comment
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="no-reviews">
+                        <i class="fas fa-comment-slash"></i>
+                        <p>Sản phẩm chưa có đánh giá nào.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section styles {
+    <style>
+        .product-details-page {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .back-link {
+            margin-bottom: 15px;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .product-image-container {
+            background: #f9f9f9;
+            border: 1px solid #e3e6f0;
+            border-radius: 5px;
+            padding: 15px;
+            text-align: center;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .product-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .no-image {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #aaa;
+        }
+        
+        .no-image i {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        
+        .product-name {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        
+        .product-meta {
+            margin-bottom: 20px;
+        }
+        
+        .meta-item {
+            margin-bottom: 10px;
+        }
+        
+        .meta-label {
+            font-weight: 600;
+            display: inline-block;
+            width: 150px;
+        }
+        
+        .meta-value {
+            display: inline-block;
+        }
+        
+        .meta-value.price {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+        
+        .product-description {
+            margin-top: 30px;
+        }
+        
+        .product-description h4 {
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .description-content {
+            background: #f9f9f9;
+            border-radius: 5px;
+            padding: 15px;
+        }
+        
+        .no-data {
+            color: #aaa;
+            font-style: italic;
+        }
+        
+        .stat-card {
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+        
+        .stat-card-body {
+            padding: 20px;
+            color: white;
+            display: flex;
+            align-items: center;
+        }
+        
+        .stat-card-icon {
+            font-size: 2rem;
+            margin-right: 15px;
+        }
+        
+        .stat-card-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .stat-card-title {
+            margin: 0;
+            opacity: 0.8;
+        }
+        
+        .bg-info {
+            background-color: #36b9cc;
+        }
+        
+        .bg-success {
+            background-color: #1cc88a;
+        }
+        
+        .bg-warning {
+            background-color: #f6c23e;
+        }
+        
+        .bg-primary {
+            background-color: #4e73df;
+        }
+        
+        .product-reviews {
+            margin-top: 30px;
+        }
+        
+        .section-title {
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .section-title i {
+            color: #f6c23e;
+            margin-right: 10px;
+        }
+        
+        .review-item {
+            background: #f9f9f9;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .review-author {
+            display: flex;
+            align-items: center;
+        }
+        
+        .review-author i {
+            margin-right: 10px;
+            color: var(--secondary);
+        }
+        
+        .review-rating {
+            color: #f6c23e;
+        }
+        
+        .review-rating i:not(.active) {
+            color: #d1d3e2;
+        }
+        
+        .review-date {
+            font-size: 0.9rem;
+            color: var(--secondary);
+        }
+        
+        .no-reviews {
+            text-align: center;
+            padding: 40px 0;
+            color: #aaa;
+        }
+        
+        .no-reviews i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25em 0.6em;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 0.35rem;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: baseline;
+        }
+        
+        .review-content {
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+        
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-left: -15px;
+            margin-right: -15px;
+        }
+        
+        .col-md-3, .col-md-4, .col-md-8 {
+            position: relative;
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+        
+        .col-md-3 {
+            flex: 0 0 25%;
+            max-width: 25%;
+        }
+        
+        .col-md-4 {
+            flex: 0 0 33.333333%;
+            max-width: 33.333333%;
+        }
+        
+        .col-md-8 {
+            flex: 0 0 66.666667%;
+            max-width: 66.666667%;
+        }
+        
+        /* Responsive */
+        @@media (max-width: 768px) {
+            .row {
+                flex-direction: column;
+            }
+            
+            .col-md-3, .col-md-4, .col-md-8 {
+                flex: 0 0 100%;
+                max-width: 100%;
+                margin-bottom: 20px;
+            }
+            
+            .review-header {
+                flex-direction: column;
+            }
+            
+            .review-date {
+                margin-top: 10px;
+            }
+        }
+    </style>
+}

@@ -1,0 +1,133 @@
+﻿@model PharmaPlus.Models.AdminOrderUpdateViewModel
+@{
+    ViewBag.Title = "Cập nhật đơn hàng";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    Response.ContentEncoding = System.Text.Encoding.UTF8;
+    Response.Charset = "utf-8";
+}
+
+<div class="admin-order-edit">
+    <div class="back-link">
+        <a href="@Url.Action("Details", new { id = Model.Id })" class="btn btn-link">
+            <i class="fas fa-arrow-left"></i> Quay lại chi tiết đơn hàng
+        </a>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h1 class="card-title">Cập nhật đơn hàng #@Model.Id</h1>
+        </div>
+        
+        <div class="card-body">
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(model => model.Id)
+                
+                <div class="form-horizontal">
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Status, htmlAttributes: new { @class = "control-label" })
+                        <div>
+                            @Html.DropDownListFor(model => model.Status, new SelectList(PharmaPlus.Models.AdminOrderUpdateViewModel.AvailableStatuses, Model.Status), new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.AdminNote, htmlAttributes: new { @class = "control-label" })
+                        <div>
+                            @Html.TextAreaFor(model => model.AdminNote, new { @class = "form-control", rows = 5 })
+                            @Html.ValidationMessageFor(model => model.AdminNote, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Lưu thay đổi
+                        </button>
+                        <a href="@Url.Action("Details", new { id = Model.Id })" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Hủy
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section styles {
+    <style>
+        .admin-order-edit {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .back-link {
+            margin-bottom: 15px;
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .control-label {
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .text-danger {
+            color: #e74a3b;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: block;
+        }
+        
+        .form-actions {
+            margin-top: 30px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        textarea.form-control {
+            resize: vertical;
+        }
+        
+        .message {
+            margin-top: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .status-message {
+            font-style: italic;
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 10px;
+        }
+    </style>
+}
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    
+    <script>
+        $(function () {
+            // Show a warning when changing to cancelled status
+            $("#Status").on("change", function () {
+                if ($(this).val() === "Đã hủy") {
+                    if (!confirm("Bạn có chắc chắn muốn hủy đơn hàng này?")) {
+                        $(this).val("@Model.Status"); // Reset to previous value
+                    }
+                }
+            });
+        });
+    </script>
+}

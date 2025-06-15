@@ -1,0 +1,364 @@
+﻿@model PharmaPlus.Controllers.AboutViewModel
+@{
+    ViewBag.Title = "Về PharmaPlus - Nhà thuốc trực tuyến tin cậy";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section styles {
+    <link rel="stylesheet" href="~/Content/css/about-style.css" />
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
+}
+
+<!-- Hero Section -->
+<section class="about-hero" id="hero">
+    <div class="hero-background">
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
+            <div class="shape shape-5"></div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="hero-content" data-aos="fade-up" data-aos-duration="800">
+            <h1 class="hero-title">
+                <span class="title-line">Về</span>
+                <span class="title-highlight">PharmaPlus</span>
+            </h1>
+            <p class="hero-subtitle">
+                15 năm đồng hành cùng sức khỏe của bạn
+            </p>
+            <div class="hero-description">
+                <p>Chúng tôi là đơn vị tiên phong trong việc ứng dụng công nghệ vào ngành dược phẩm, 
+                mang đến dịch vụ chăm sóc sức khỏe toàn diện, chuyên nghiệp và đáng tin cậy.</p>
+            </div>
+            <div class="hero-buttons">
+                <a href="#team" class="btn btn-primary btn-large">
+                    <i class="fas fa-users"></i>
+                    Đội ngũ của chúng tôi
+                </a>
+                <a href="#mission" class="btn btn-outline btn-large">
+                    <i class="fas fa-heart"></i>
+                    Sứ mệnh
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section" id="stats">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card" data-aos="zoom-in" data-aos-delay="100">
+                <div class="stat-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <div class="stat-number" data-count="@Model.CompanyStats.YearsOfExperience">0</div>
+                <div class="stat-label">Năm kinh nghiệm</div>
+            </div>
+            <div class="stat-card" data-aos="zoom-in" data-aos-delay="200">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-number" data-count="@Model.CompanyStats.HappyCustomers">0</div>
+                <div class="stat-label">Khách hàng hài lòng</div>
+            </div>
+            <div class="stat-card" data-aos="zoom-in" data-aos-delay="300">
+                <div class="stat-icon">
+                    <i class="fas fa-pills"></i>
+                </div>
+                <div class="stat-number" data-count="@Model.CompanyStats.ProductsSold">0</div>
+                <div class="stat-label">Sản phẩm đã bán</div>
+            </div>
+            <div class="stat-card" data-aos="zoom-in" data-aos-delay="400">
+                <div class="stat-icon">
+                    <i class="fas fa-user-md"></i>
+                </div>
+                <div class="stat-number" data-count="@Model.CompanyStats.PharmacistsCount">0</div>
+                <div class="stat-label">Dược sĩ chuyên nghiệp</div>
+            </div>
+            <div class="stat-card" data-aos="zoom-in" data-aos-delay="500">
+                <div class="stat-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div class="stat-number" data-count="@Model.CompanyStats.LocationsCount">0</div>
+                <div class="stat-label">Chi nhánh toàn quốc</div>
+            </div>
+            <div class="stat-card" data-aos="zoom-in" data-aos-delay="600">
+                <div class="stat-icon">
+                    <i class="fas fa-certificate"></i>
+                </div>
+                <div class="stat-number" data-count="@Model.CompanyStats.CertificationsCount">0</div>
+                <div class="stat-label">Chứng nhận quốc tế</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Mission Section -->
+<section class="mission-section" id="mission">
+    <div class="container">
+        <div class="section-header" data-aos="fade-up">
+            <h2>Sứ mệnh & Tầm nhìn</h2>
+            <p>Định hướng phát triển bền vững của PharmaPlus</p>
+        </div>
+        
+        <div class="mission-grid">
+            <div class="mission-card" data-aos="fade-right" data-aos-delay="100">
+                <div class="mission-icon">
+                    <i class="fas fa-bullseye"></i>
+                </div>
+                <h3>Sứ mệnh</h3>
+                <p>Mang đến dịch vụ dược phẩm chất lượng cao, an toàn và hiệu quả, góp phần nâng cao chất lượng cuộc sống của cộng đồng thông qua việc ứng dụng công nghệ hiện đại và đội ngũ chuyên gia giàu kinh nghiệm.</p>
+                <ul class="mission-points">
+                    <li><i class="fas fa-check"></i> Đảm bảo chất lượng sản phẩm 100%</li>
+                    <li><i class="fas fa-check"></i> Tư vấn chuyên nghiệp từ dược sĩ</li>
+                    <li><i class="fas fa-check"></i> Dịch vụ khách hàng tận tâm 24/7</li>
+                </ul>
+            </div>
+            
+            <div class="mission-card" data-aos="fade-left" data-aos-delay="300">
+                <div class="mission-icon">
+                    <i class="fas fa-eye"></i>
+                </div>
+                <h3>Tầm nhìn</h3>
+                <p>Trở thành hệ thống nhà thuốc hàng đầu Việt Nam, tiên phong trong việc số hóa ngành dược phẩm và được khách hàng tin tưởng lựa chọn đầu tiên khi có nhu cầu chăm sóc sức khỏe.</p>
+                <ul class="mission-points">
+                    <li><i class="fas fa-check"></i> Dẫn đầu về công nghệ trong ngành dược</li>
+                    <li><i class="fas fa-check"></i> Mở rộng 50+ chi nhánh toàn quốc</li>
+                    <li><i class="fas fa-check"></i> Phục vụ 1 triệu khách hàng</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Values Section -->
+<section class="values-section">
+    <div class="container">
+        <div class="section-header" data-aos="fade-up">
+            <h2>Giá trị cốt lõi</h2>
+            <p>Những nguyên tắc định hướng mọi hoạt động của chúng tôi</p>
+        </div>
+        
+        <div class="values-grid">
+            <div class="value-card" data-aos="flip-left" data-aos-delay="100">
+                <div class="value-front">
+                    <div class="value-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Chất lượng</h3>
+                    <p>Cam kết 100% thuốc chính hãng</p>
+                </div>
+                <div class="value-back">
+                    <h3>Chất lượng</h3>
+                    <p>Mọi sản phẩm đều được kiểm định nghiêm ngặt theo tiêu chuẩn quốc tế. Chúng tôi hợp tác với các nhà sản xuất uy tín và có hệ thống truy xuất nguồn gốc minh bạch.</p>
+                </div>
+            </div>
+            
+            <div class="value-card" data-aos="flip-left" data-aos-delay="200">
+                <div class="value-front">
+                    <div class="value-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3>Tận tâm</h3>
+                    <p>Đặt khách hàng làm trung tâm</p>
+                </div>
+                <div class="value-back">
+                    <h3>Tận tâm</h3>
+                    <p>Chúng tôi luôn lắng nghe và thấu hiểu nhu cầu của khách hàng. Mỗi tư vấn, mỗi dịch vụ đều được thực hiện với sự chân thành và trách nhiệm cao nhất.</p>
+                </div>
+            </div>
+            
+            <div class="value-card" data-aos="flip-left" data-aos-delay="300">
+                <div class="value-front">
+                    <div class="value-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3>Đổi mới</h3>
+                    <p>Tiên phong ứng dụng công nghệ</p>
+                </div>
+                <div class="value-back">
+                    <h3>Đổi mới</h3>
+                    <p>Không ngừng nghiên cứu và ứng dụng các công nghệ mới nhất để mang đến trải nghiệm tốt nhất cho khách hàng trong việc chăm sóc sức khỏe.</p>
+                </div>
+            </div>
+            
+            <div class="value-card" data-aos="flip-left" data-aos-delay="400">
+                <div class="value-front">
+                    <div class="value-icon">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <h3>Tin cậy</h3>
+                    <p>Xây dựng mối quan hệ lâu dài</p>
+                </div>
+                <div class="value-back">
+                    <h3>Tin cậy</h3>
+                    <p>Minh bạch trong mọi giao dịch, đúng cam kết về thời gian và chất lượng. Chúng tôi xây dựng niềm tin qua từng hành động cụ thể và kết quả thực tế.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Team Section -->
+<section class="team-section" id="team">
+    <div class="container">
+        <div class="section-header" data-aos="fade-up">
+            <h2 style="color:#0F172A">Đội ngũ chuyên gia</h2>
+            <p>Những con người tài năng và tận tâm đứng sau thành công của PharmaPlus</p>
+        </div>
+        
+        <div class="team-grid">
+            @foreach (var member in Model.TeamMembers)
+            {
+                <div class="team-card" data-aos="zoom-in-up" data-aos-delay="@(Model.TeamMembers.IndexOf(member) * 100 + 100)">
+                    <div class="team-image">
+                        <img src="@member.ImageUrl" alt="@member.Name" loading="lazy">
+                        <div class="team-overlay">
+                            <div class="team-social">
+                                <a href="@member.LinkedInUrl" class="social-link">
+                                    <i class="fab fa-linkedin"></i>
+                                </a>
+                                <a href="@member.FacebookUrl" class="social-link">
+                                    <i class="fab fa-facebook"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="team-info">
+                        <h3>@member.Name</h3>
+                        <p class="team-position">@member.Position</p>
+                        <p class="team-experience">@member.Experience</p>
+                        <div class="team-specialty">
+                            <span class="specialty-label">Chuyên môn:</span>
+                            <span class="specialty-text">@member.Specialty</span>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- Achievements Section -->
+<section class="achievements-section">
+    <div class="container">
+        <div class="section-header" data-aos="fade-up">
+            <h2>Thành tựu & Giải thưởng</h2>
+            <p>Những ghi nhận và vinh danh cho nỗ lực không ngừng của chúng tôi</p>
+        </div>
+        
+        <div class="achievements-grid">
+            @foreach (var achievement in Model.Achievements)
+            {
+                <div class="achievement-card" data-aos="fade-up" data-aos-delay="@(Model.Achievements.IndexOf(achievement) * 150 + 100)">
+                    <div class="achievement-icon">
+                        <i class="@achievement.IconClass"></i>
+                    </div>
+                    <div class="achievement-year">@achievement.Year</div>
+                    <h3>@achievement.Title</h3>
+                    <p>@achievement.Organization</p>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="cta-background">
+        <div class="cta-shapes">
+            <div class="cta-shape cta-shape-1"></div>
+            <div class="cta-shape cta-shape-2"></div>
+            <div class="cta-shape cta-shape-3"></div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="cta-content" data-aos="zoom-in">
+            <h2>Sẵn sàng trải nghiệm dịch vụ của chúng tôi?</h2>
+            <p>Hãy để PharmaPlus đồng hành cùng bạn trên hành trình chăm sóc sức khỏe</p>
+            <div class="cta-buttons">
+                <a href="@Url.Action("Index", "Home")" class="btn btn-primary btn-large">
+                    <i class="fas fa-shopping-cart"></i>
+                    Mua sắm ngay
+                </a>
+                <a href="@Url.Action("Contact", "Home")" class="btn btn-outline btn-large">
+                    <i class="fas fa-phone"></i>
+                    Liên hệ tư vấn
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section scripts {
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="~/Scripts/js/about-animations.js"></script>
+    
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-out-cubic',
+            once: true,
+            offset: 100
+        });
+
+        // Counter animation
+        function animateCounters() {
+            const counters = document.querySelectorAll('.stat-number');
+            const speed = 200;
+
+            counters.forEach(counter => {
+                const target = parseInt(counter.getAttribute('data-count'));
+                const count = parseInt(counter.innerText);
+                const increment = target / speed;
+
+                if (count < target) {
+                    counter.innerText = Math.ceil(count + increment);
+                    setTimeout(() => animateCounters(), 10);
+                } else {
+                    counter.innerText = target.toLocaleString();
+                }
+            });
+        }
+
+        // Trigger counter animation when stats section is visible
+        const statsSection = document.querySelector('.stats-section');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounters();
+                    observer.unobserve(entry.target);
+                }
+            });
+        });
+        
+        if (statsSection) {
+            observer.observe(statsSection);
+        }
+
+        // Smooth scroll for internal links
+        document.addEventListener('DOMContentLoaded', function() {
+            const scrollLinks = document.querySelectorAll('a[href^="#"]');
+            
+            scrollLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetSection = document.querySelector(targetId);
+                    
+                    if (targetSection) {
+                        targetSection.scrollIntoView({ 
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+}

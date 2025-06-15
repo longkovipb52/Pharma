@@ -1,0 +1,177 @@
+﻿@model PharmaPlus.Models.AdminContactDetailsViewModel
+@{
+    ViewBag.Title = "Chi tiết liên hệ";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    Response.ContentEncoding = System.Text.Encoding.UTF8;
+    Response.Charset = "utf-8";
+}
+
+<div class="admin-contact-details">
+    <div class="back-link mb-3">
+        <a href="@Url.Action("Index")" class="btn btn-link">
+            <i class="fas fa-arrow-left"></i> Quay lại danh sách
+        </a>
+    </div>
+    
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+    
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-envelope"></i> Chi tiết liên hệ #@Model.Id
+            </h5>
+            
+            <div>
+                <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-primary">
+                    <i class="fas fa-reply"></i> Phản hồi
+                </a>
+                <a href="@Url.Action("Delete", new { id = Model.Id })" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> Xóa
+                </a>
+            </div>
+        </div>
+        
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="contact-info-card">
+                        <h6 class="card-subtitle mb-2 text-muted">Thông tin người gửi</h6>
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p><strong>Họ tên:</strong> @Model.Name</p>
+                                <p><strong>Email:</strong> @Model.Email</p>
+                                @if (Model.UserId.HasValue)
+                                {
+                                    <p>
+                                        <strong>Người dùng:</strong> 
+                                        <a href="@Url.Action("Details", "AdminUsers", new { id = Model.UserId })">
+                                            @Model.UserFullName
+                                        </a>
+                                    </p>
+                                }
+                            </div>
+                            <div>
+                                <span class="@Model.StatusClass">@Model.Status</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="contact-info-card">
+                        <h6 class="card-subtitle mb-2 text-muted">Thông tin liên hệ</h6>
+                        <p><strong>Ngày gửi:</strong> @Model.FormattedCreatedAt</p>
+                        <p><strong>Tiêu đề:</strong> @Model.Subject</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="contact-message-card mb-4">
+                <h6 class="card-subtitle mb-3">Nội dung liên hệ</h6>
+                <div class="message-content">
+                    @Model.Message
+                </div>
+            </div>
+            
+            @if (!string.IsNullOrEmpty(Model.AdminReply))
+            {
+                <div class="contact-reply-card">
+                    <h6 class="card-subtitle mb-3">Phản hồi của admin</h6>
+                    <div class="admin-reply-meta mb-2">
+                        <span><strong>Phản hồi lúc:</strong> @Model.FormattedRepliedAt</span>
+                    </div>
+                    <div class="reply-content">
+                        @Model.AdminReply
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-4">
+                    <p class="text-muted">Chưa có phản hồi</p>
+                    <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-primary">
+                        <i class="fas fa-reply"></i> Phản hồi ngay
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section styles {
+    <style>
+        .admin-contact-details {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .card-title i {
+            color: #4e73df;
+            margin-right: 10px;
+        }
+        
+        .contact-info-card,
+        .contact-message-card,
+        .contact-reply-card {
+            background-color: #f8f9fc;
+            border-radius: 0.35rem;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .message-content,
+        .reply-content {
+            background-color: white;
+            border: 1px solid #e3e6f0;
+            border-radius: 0.35rem;
+            padding: 20px;
+            min-height: 100px;
+            white-space: pre-line;
+        }
+        
+        .badge {
+            padding: 0.5em 1em;
+        }
+        
+        .bg-success {
+            background-color: #1cc88a !important;
+            color: white;
+        }
+        
+        .bg-primary {
+            background-color: #4e73df !important;
+            color: white;
+        }
+        
+        .bg-warning {
+            background-color: #f6c23e !important;
+            color: #212529;
+        }
+        
+        .bg-secondary {
+            background-color: #858796 !important;
+            color: white;
+        }
+        
+        .back-link a {
+            color: #4e73df;
+        }
+        
+        .back-link a:hover {
+            text-decoration: none;
+        }
+        
+        .admin-reply-meta {
+            font-size: 0.9rem;
+            color: #858796;
+        }
+    </style>
+}

@@ -1,0 +1,283 @@
+﻿@model PharmaPlus.Models.CheckoutViewModel
+@{
+    ViewBag.Title = "Thanh toán - PharmaPlus";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    Response.ContentEncoding = System.Text.Encoding.UTF8;
+    Response.Charset = "utf-8";
+}
+
+<div class="checkout-wrapper">
+    <div class="checkout-header">
+        <div class="checkout-container">
+            <h1 class="checkout-title">Thanh toán</h1>
+            <div class="checkout-steps">
+                <div class="checkout-step active">
+                    <div class="step-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="step-label">Địa chỉ giao hàng</div>
+                </div>
+                <div class="checkout-step active">
+                    <div class="step-icon">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <div class="step-label">Phương thức thanh toán</div>
+                </div>
+                <div class="checkout-step">
+                    <div class="step-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="step-label">Xác nhận đơn hàng</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="checkout-container">
+        @using (Html.BeginForm("PlaceOrder", "Checkout", FormMethod.Post, new { @class = "checkout-form" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="checkout-content">
+                <div class="checkout-main">
+                    <!-- Shipping Information Section -->
+                    <div class="checkout-section">
+                        <div class="checkout-section-header">
+                            <h2 class="checkout-section-title">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Thông tin giao hàng
+                            </h2>
+                        </div>
+                        
+                        <div class="checkout-section-content">
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.ShippingInfo.RecipientName, new { @class = "form-label" })
+                                @Html.TextBoxFor(m => m.ShippingInfo.RecipientName, new { @class = "form-control", placeholder = "Nhập họ tên người nhận" })
+                                @Html.ValidationMessageFor(m => m.ShippingInfo.RecipientName, "", new { @class = "text-danger" })
+                            </div>
+                            
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.ShippingInfo.RecipientPhone, new { @class = "form-label" })
+                                @Html.TextBoxFor(m => m.ShippingInfo.RecipientPhone, new { @class = "form-control", placeholder = "Nhập số điện thoại" })
+                                @Html.ValidationMessageFor(m => m.ShippingInfo.RecipientPhone, "", new { @class = "text-danger" })
+                            </div>
+                            
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.ShippingInfo.ShippingAddress, new { @class = "form-label" })
+                                @Html.TextAreaFor(m => m.ShippingInfo.ShippingAddress, new { @class = "form-control", placeholder = "Nhập địa chỉ giao hàng đầy đủ", rows = 3 })
+                                @Html.ValidationMessageFor(m => m.ShippingInfo.ShippingAddress, "", new { @class = "text-danger" })
+                            </div>
+                            
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.ShippingInfo.OrderNotes, new { @class = "form-label" })
+                                @Html.TextAreaFor(m => m.ShippingInfo.OrderNotes, new { @class = "form-control", placeholder = "Ghi chú về đơn hàng (không bắt buộc)", rows = 2 })
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Payment Method Section -->
+                    <div class="checkout-section">
+                        <div class="checkout-section-header">
+                            <h2 class="checkout-section-title">
+                                <i class="fas fa-credit-card"></i>
+                                Phương thức thanh toán
+                            </h2>
+                        </div>
+                        
+                        <div class="checkout-section-content">
+                            <div class="payment-methods">
+                                @foreach (var method in Model.PaymentInfo.AvailablePaymentMethods)
+                                {
+                                    <div class="payment-method-item">
+                                        <input type="radio" id="payment-@method.Id" name="PaymentInfo.PaymentMethod" value="@method.Id" 
+                                               @(Model.PaymentInfo.PaymentMethod == method.Id ? "checked" : "") />
+                                        <label for="payment-@method.Id" class="payment-method-label">
+                                            <div class="payment-method-icon" style="background-color: @method.Color">
+                                                <i class="fas @method.Icon"></i>
+                                            </div>
+                                            <div class="payment-method-info">
+                                                <span class="payment-method-name">@method.Name</span>
+                                                <span class="payment-method-description">@method.Description</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                            @Html.ValidationMessageFor(m => m.PaymentInfo.PaymentMethod, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Order Summary Section -->
+                <div class="checkout-sidebar">
+                    <div class="checkout-summary">
+                        <div class="checkout-summary-header">
+                            <h3 class="checkout-summary-title">Tóm tắt đơn hàng</h3>
+                            <span class="checkout-summary-count">@Model.TotalItems sản phẩm</span>
+                        </div>
+                        
+                        <div class="checkout-summary-items">
+                            @foreach (var item in Model.CartItems)
+                            {
+                                <div class="checkout-item">
+                                    <div class="checkout-item-image">
+                                        <img src="@item.ImageUrl" alt="@item.ProductName" />
+                                        <span class="checkout-item-quantity">@item.Quantity</span>
+                                    </div>
+                                    <div class="checkout-item-details">
+                                        <div class="checkout-item-name">@item.ProductName</div>
+                                        <div class="checkout-item-price">@item.FormattedPrice</div>
+                                    </div>
+                                    <div class="checkout-item-subtotal">
+                                        @item.FormattedSubTotal
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        
+                        <div class="checkout-summary-totals">
+                            <div class="checkout-summary-row">
+                                <span>Tạm tính:</span>
+                                <span>@Model.FormattedSubTotal</span>
+                            </div>
+                            <div class="checkout-summary-row">
+                                <span>Phí vận chuyển:</span>
+                                <span>@Model.FormattedShippingFee</span>
+                            </div>
+                            <div class="checkout-summary-row total">
+                                <span>Tổng cộng:</span>
+                                <span>@Model.FormattedTotalAmount</span>
+                            </div>
+                        </div>
+                        
+                        @if (Model.HasPrescriptionItems)
+                        {
+                            <div class="checkout-prescription-notice">
+                                <i class="fas fa-prescription"></i>
+                                <p>Đơn hàng của bạn có sản phẩm yêu cầu đơn thuốc. Vui lòng tải lên đơn thuốc khi hoàn tất đặt hàng.</p>
+                            </div>
+                        }
+                        
+                        <div class="checkout-actions">
+                            <button type="submit" class="checkout-submit-btn">
+                                <i class="fas fa-check-circle"></i>
+                                Đặt hàng
+                            </button>
+                            <a href="@Url.Action("Index", "Cart")" class="checkout-back-btn">
+                                <i class="fas fa-arrow-left"></i>
+                                Quay lại giỏ hàng
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section styles {
+    <link href="~/Content/css/checkout-style.css" rel="stylesheet" />
+}
+
+@section scripts {
+    <script src="~/Scripts/js/checkout-script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hiển thị thông báo lỗi từ TempData nếu có
+            @if(TempData["ErrorMessage"] != null)
+            {
+                @:if (typeof showCartToast === 'function') {
+                @:    showCartToast('@TempData["ErrorMessage"]', 'error');
+                @:}
+            }
+            
+            // THÊM MỚI: Overlay xử lý đơn hàng
+            const createProcessingOverlay = () => {
+                const overlay = document.createElement('div');
+                overlay.className = 'processing-overlay';
+                overlay.innerHTML = `
+                    <div class="processing-content">
+                        <div class="processing-icon">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                        <h2>Đang xử lý đơn hàng</h2>
+                        <p>Vui lòng đợi trong giây lát...</p>
+                        <div class="processing-progress">
+                            <div class="progress-bar"></div>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(overlay);
+                return overlay;
+            };
+            
+            // Form submit handler
+            const checkoutForm = document.querySelector('.checkout-form');
+            if (checkoutForm) {
+                checkoutForm.addEventListener('submit', function(e) {
+                    let isValid = true;
+                    // Thực hiện validate các trường ở đây (nếu muốn)
+                    // Nếu có lỗi:
+                    // isValid = false;
+
+                    if (!isValid) {
+                        e.preventDefault();
+                        // Hiển thị lỗi cho người dùng
+                    }
+                    // Nếu hợp lệ, để form submit bình thường (KHÔNG fetch, KHÔNG e.preventDefault())
+                });
+            }
+        });
+    </script>
+    
+    <style>
+        .processing-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        
+        .processing-content {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .processing-icon {
+            font-size: 60px;
+            color: #3b82f6;
+            margin-bottom: 20px;
+        }
+        
+        .processing-progress {
+            height: 6px;
+            background-color: #e5e7eb;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: #3b82f6;
+            animation: progress 2s ease-in-out forwards;
+        }
+        
+        @@keyframes progress {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+    </style>
+}

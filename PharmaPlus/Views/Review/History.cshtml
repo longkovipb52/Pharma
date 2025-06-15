@@ -1,0 +1,171 @@
+﻿@model IEnumerable<PharmaPlus.Models.Review>
+@{
+    ViewBag.Title = "Lịch sử đánh giá";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="review-history-page">
+    <div class="container">
+        <div class="page-header">
+            <h1>Lịch sử đánh giá của bạn</h1>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+
+        @if (!Model.Any())
+        {
+            <div class="empty-state">
+                <i class="fa fa-star-half-alt empty-icon"></i>
+                <h3>Bạn chưa có đánh giá nào</h3>
+                <p>Hãy mua sắm và đánh giá sản phẩm để giúp đỡ cộng đồng!</p>
+                <a href="@Url.Action("Index", "Products")" class="btn btn-primary">Khám phá sản phẩm</a>
+            </div>
+        }
+        else
+        {
+            <div class="review-list">
+                @foreach (var review in Model)
+                {
+                    <div class="review-card">
+                        <div class="review-product">
+                            <div class="product-image">
+                                @if (!string.IsNullOrEmpty(review.Product.image_url))
+                                {
+                                    <img src="~/images/products/@review.Product.image_url" alt="@review.Product.name" />
+                                }
+                                else
+                                {
+                                    <img src="~/images/products/default.jpg" alt="@review.Product.name" />
+                                }
+                            </div>
+                            <div class="product-info">
+                                <h3>
+                                    <a href="@Url.Action("Details", "Products", new { id = review.product_id })">
+                                        @review.Product.name
+                                    </a>
+                                </h3>
+                                <p class="review-date">Đánh giá vào: @review.created_at.Value.ToString("dd/MM/yyyy HH:mm")</p>
+                            </div>
+                        </div>
+                        <div class="review-content">
+                            <div class="review-rating">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <i class="fa @(i <= review.rating ? "fa-star" : "fa-star-o")"></i>
+                                }
+                            </div>
+                            
+                            <!-- Thêm hiển thị trạng thái đánh giá -->
+                            <div class="review-status">
+                                @if (review.status == "approved")
+                                {
+                                    <span class="status-badge status-approved">Đã duyệt</span>
+                                }
+                                else if (review.status == "pending")
+                                {
+                                    <span class="status-badge status-pending">Đang chờ duyệt</span>
+                                }
+                                else if (review.status == "rejected")
+                                {
+                                    <span class="status-badge status-rejected">Đã từ chối</span>
+                                }
+                                else
+                                {
+                                    <span class="status-badge">@(string.IsNullOrEmpty(review.status) ? "Chưa xác định" : review.status)</span>
+                                }
+                            </div>
+                            
+                            <p class="review-comment">@review.comment</p>
+                        </div>
+                        <div class="review-actions">
+                            <!-- Chỉ cho phép sửa nếu chưa được duyệt hoặc bị từ chối -->
+                            @if (review.status != "approved")
+                            {
+                                <a href="@Url.Action("Edit", "Review", new { id = review.id })" class="btn btn-sm btn-primary">
+                                    <i class="fa fa-edit"></i> Sửa
+                                </a>
+                            }
+                            <a href="@Url.Action("Delete", "Review", new { id = review.id })" class="btn btn-sm btn-danger">
+                                <i class="fa fa-trash"></i> Xóa
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@section styles {
+    <link href="~/Content/css/review-style.css" rel="stylesheet" />
+}
+
+@section scripts {
+    <script src="~/Scripts/js/review-script.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Hiệu ứng staggered fade-in cho các card đánh giá
+            $('.review-card').each(function(index) {
+                var $card = $(this);
+                setTimeout(function() {
+                    $card.addClass('card-visible');
+                }, 100 * index);
+            });
+            
+            // Hiệu ứng hover cho các card
+            $('.review-card').hover(
+                function() { $(this).addClass('card-hover'); },
+                function() { $(this).removeClass('card-hover'); }
+            );
+            
+            // Hiệu ứng cho các nút hành động
+            $('.review-actions .btn').hover(
+                function() {
+                    $(this).addClass('animated pulse');
+                },
+                function() {
+                    $(this).removeClass('animated pulse');
+                }
+            );
+            
+            // Hiệu ứng xác nhận khi nhấn nút xóa
+            $('.btn-danger').on('click', function(e) {
+                e.preventDefault(); // Ngăn không cho chuyển trang
+    
+                if (confirm('Bạn có chắc chắn muốn xóa đánh giá này không?')) {
+                    var reviewId = $(this).attr('href').split('/').pop();
+                    console.log("Deleting review ID:", reviewId);
+                    
+                    // Gửi Ajax request xóa trực tiếp
+                    $.ajax({
+                        url: '@Url.Action("Delete", "Review")/' + reviewId,
+                        type: 'POST',
+                        data: {
+                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function(result) {
+                            alert('Đánh giá đã được xóa thành công!');
+                            location.reload();
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("Error:", error);
+                            alert('Có lỗi xảy ra khi xóa đánh giá. Vui lòng thử lại sau.');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

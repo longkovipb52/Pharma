@@ -1,0 +1,362 @@
+﻿@model PharmaPlus.Controllers.HomeViewModel
+@{
+    ViewBag.Title = "PharmaPlus - Online Pharmacy & Medical Supplies";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    <link rel="stylesheet" href="~/Content/css/home-style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="nav-brand">
+                <i class="fas fa-pills"></i>
+                <span>PharmaPlus</span>
+            </div>
+            
+            <nav class="nav-menu" id="navMenu">
+                <a href="#home" class="nav-link active">Trang chủ</a>
+                <a href="#products" class="nav-link">Sản phẩm</a>
+                <a href="#categories" class="nav-link">Danh mục</a>
+                <a href="#contact" class="nav-link">Liên hệ</a>
+            </nav>
+            
+            <div class="nav-actions">
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="Tìm kiếm sản phẩm..." id="searchInput">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+                <button class="icon-btn" id="favoritesBtn">
+                    <i class="fas fa-heart"></i>
+                    <span class="badge">0</span>
+                </button>
+                <button class="icon-btn" id="accountBtn">
+                    <i class="fas fa-user"></i>
+                </button>
+                <button class="icon-btn" id="cartBtn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="badge">0</span>
+                </button>
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1>Sức khỏe của bạn, Ưu tiên của chúng tôi</h1>
+                    <p>Nhà thuốc trực tuyến đáng tin cậy với thuốc kê đơn, sản phẩm không kê đơn và tư vấn chuyên khoa.</p>
+                    <div class="hero-buttons">
+                        <button class="btn btn-primary" onclick="scrollToProducts()">Mua sắm ngay</button>
+                        <button class="btn btn-outline">Tải đơn thuốc</button>
+                    </div>
+                    <div class="hero-features">
+                        <div class="feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>@Model.TotalProducts+ Sản phẩm</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>@Model.TotalCategories+ Danh mục</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Giao hàng nhanh</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img src="https://via.placeholder.com/800x550?text=PharmaPlus+Hero" alt="Pharmacy Hero Image">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section class="categories" id="categories">
+        <div class="container">
+            <div class="section-header">
+                <h2>Danh mục sản phẩm</h2>
+                <p>Tìm đúng loại thuốc và sản phẩm chăm sóc sức khỏe cho nhu cầu của bạn</p>
+            </div>
+            <div class="categories-grid">
+                @if (Model.Categories != null && Model.Categories.Any())
+                {
+                    foreach (var category in Model.Categories)
+                    {
+                        <div class="category-card" data-category="@category.id" onclick="filterByCategory(@category.id)">
+                            <i class="fas fa-pills"></i>
+                            <h3>@category.name</h3>
+                            @if (!string.IsNullOrEmpty(category.description))
+                            {
+                                <p>@category.description</p>
+                            }
+                        </div>
+                    }
+                }
+                else
+                {
+                    <!-- Default categories if no data -->
+                    <div class="category-card">
+                        <i class="fas fa-pills"></i>
+                        <h3>Thuốc giảm đau</h3>
+                    </div>
+                    <div class="category-card">
+                        <i class="fas fa-thermometer"></i>
+                        <h3>Thuốc kháng sinh</h3>
+                    </div>
+                    <div class="category-card">
+                        <i class="fas fa-leaf"></i>
+                        <h3>Vitamin</h3>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Products Section -->
+    <section class="products" id="products">
+        <div class="container">
+            <div class="section-header">
+                <h2>Sản phẩm nổi bật</h2>
+                <p>Khám phá các loại thuốc và sản phẩm chăm sóc sức khỏe phổ biến nhất</p>
+            </div>
+            <div class="products-grid" id="productsGrid">
+                @if (Model.FeaturedProducts != null && Model.FeaturedProducts.Any())
+                {
+                    foreach (var product in Model.FeaturedProducts)
+                    {
+                        <div class="product-card" data-product-id="@product.id">
+                            <div class="product-image">
+                                <img src="https://via.placeholder.com/280x250?text=@Uri.EscapeDataString(product.name)" 
+                                     alt="@product.name">
+                                <button class="favorite-btn" onclick="toggleFavorite(@product.id)">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                            </div>
+                            <div class="product-info">
+                                <span class="product-category">@(product.Category != null ? product.Category.name : "Sản phẩm")</span>
+                                <h3 class="product-name">@product.name</h3>
+                                <div class="product-price">@product.price.ToString("C0", new System.Globalization.CultureInfo("vi-VN"))</div>
+                                @if (product.prescription_required == true)
+                                {
+                                    <span class="prescription-required">Cần đơn thuốc</span>
+                                }
+                                <button class="add-to-cart-btn" 
+                                        onclick="addToCart(@product.id)" 
+                                        @(product.stock <= 0 ? "disabled" : "")>
+                                    <i class="fas fa-shopping-cart"></i>
+                                    @if (product.prescription_required == true)
+                                    {
+                                        <text>Yêu cầu với đơn thuốc</text>
+                                    }
+                                    else if (product.stock > 0)
+                                    {
+                                        <text>Thêm vào giỏ</text>
+                                    }
+                                    else
+                                    {
+                                        <text>Hết hàng</text>
+                                    }
+                                </button>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="col-12">
+                        <p class="text-center">Không có sản phẩm nào để hiển thị.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+
+    <!-- Info Section -->
+    <section class="info-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Tại sao chọn PharmaPlus</h2>
+                <p>Chúng tôi cam kết cung cấp dịch vụ và chăm sóc dược phẩm tốt nhất</p>
+            </div>
+            <div class="info-grid">
+                <div class="info-card">
+                    <i class="fas fa-truck"></i>
+                    <h3>Giao hàng nhanh</h3>
+                    <p>Nhận thuốc tại nhà trong vòng 24-48 giờ</p>
+                </div>
+                <div class="info-card">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>An toàn & Bảo mật</h3>
+                    <p>Thông tin cá nhân và y tế của bạn luôn được bảo vệ</p>
+                </div>
+                <div class="info-card">
+                    <i class="fas fa-user-md"></i>
+                    <h3>Dược sĩ chuyên nghiệp</h3>
+                    <p>Đội ngũ dược sĩ có giấy phép sẵn sàng tư vấn</p>
+                </div>
+                <div class="info-card">
+                    <i class="fas fa-clock"></i>
+                    <h3>Hỗ trợ 24/7</h3>
+                    <p>Dịch vụ khách hàng luôn sẵn sàng hỗ trợ khẩn cấp</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials">
+        <div class="container">
+            <div class="section-header">
+                <h2>Khách hàng nói gì về chúng tôi</h2>
+                <p>Lắng nghe phản hồi từ những khách hàng hài lòng với dịch vụ PharmaPlus</p>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="avatar">TL</div>
+                        <div class="customer-info">
+                            <h4>Trần Linh</h4>
+                            <p>Hà Nội</p>
+                        </div>
+                    </div>
+                    <div class="rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p>"PharmaPlus đã giúp tôi rất nhiều với lịch trình bận rộn. Việc đặt thuốc online và nhận hàng tại nhà thật tiện lợi."</p>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="avatar">NV</div>
+                        <div class="customer-info">
+                            <h4>Nguyễn Văn</h4>
+                            <p>TP.HCM</p>
+                        </div>
+                    </div>
+                    <div class="rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p>"Dịch vụ khách hàng tuyệt vời. Khi tôi có câu hỏi về thuốc, dược sĩ đã giải thích rất kỹ lưỡng."</p>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="avatar">LT</div>
+                        <div class="customer-info">
+                            <h4>Lê Thu</h4>
+                            <p>Đà Nẵng</p>
+                        </div>
+                    </div>
+                    <div class="rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p>"Giá cả cạnh tranh và họ luôn nhắc nhở khi đến thời gian uống thuốc. Dịch vụ rất chuyên nghiệp!"</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-brand">
+                        <i class="fas fa-pills"></i>
+                        <span>PharmaPlus</span>
+                    </div>
+                    <p>Nhà thuốc trực tuyến đáng tin cậy với thuốc kê đơn và sản phẩm chăm sóc sức khỏe.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Mua sắm</h3>
+                    <ul>
+                        <li><a href="#">Tất cả sản phẩm</a></li>
+                        <li><a href="#">Danh mục</a></li>
+                        <li><a href="#">Thuốc kê đơn</a></li>
+                        <li><a href="#">Ưu đãi đặc biệt</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Tài khoản</h3>
+                    <ul>
+                        <li><a href="#">Tài khoản của tôi</a></li>
+                        <li><a href="#">Lịch sử đơn hàng</a></li>
+                        <li><a href="#">Tải đơn thuốc</a></li>
+                        <li><a href="#">Sản phẩm yêu thích</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Hỗ trợ</h3>
+                    <ul>
+                        <li><a href="#">Liên hệ</a></li>
+                        <li><a href="#">Câu hỏi thường gặp</a></li>
+                        <li><a href="#">Thông tin giao hàng</a></li>
+                        <li><a href="#">Chính sách đổi trả</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 PharmaPlus. Tất cả quyền được bảo lưu.</p>
+                <div class="footer-links">
+                    <a href="#">Chính sách bảo mật</a>
+                    <a href="#">Điều khoản dịch vụ</a>
+                    <a href="#">Chính sách cookie</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Product Modal -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <span class="close" id="closeModal">&times;</span>
+            <div class="modal-body" id="modalBody">
+                <!-- Product details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <div class="notification-content">
+            <i class="fas fa-check-circle"></i>
+            <span id="notificationText">Sản phẩm đã được thêm vào giỏ!</span>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/Scripts/js/home-script.js"></script>
+</body>
+</html>

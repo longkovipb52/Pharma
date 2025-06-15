@@ -1,0 +1,550 @@
+/* === ĐÁNH GIÁ SẢN PHẨM STYLES === */
+
+/* General styles */
+.review-form-container,
+.review-history-page,
+.delete-review-page {
+    padding: 40px 0;
+}
+
+.page-header {
+    margin-bottom: 30px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+}
+
+.page-header h1 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+/* Product info styles */
+.product-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.product-image {
+    width: 100px;
+    height: 100px;
+    overflow: hidden;
+    border-radius: 8px;
+    margin-right: 20px;
+}
+
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.product-details h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 10px 0;
+}
+
+.product-details .price {
+    color: #e53935;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+/* Rating stars styles */
+.rating-input {
+    margin-bottom: 20px;
+}
+
+.rating-stars {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+}
+
+.rating-stars input {
+    display: none;
+}
+
+.rating-stars label {
+    cursor: pointer;
+    font-size: 25px;
+    color: #ddd;
+    margin-right: 5px;
+}
+
+.rating-stars label:before {
+    content: "\f005";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+}
+
+.rating-stars input:checked ~ label,
+.rating-stars label:hover,
+.rating-stars label:hover ~ label {
+    color: #ffb400;
+}
+
+.rating-stars input:checked + label:hover,
+.rating-stars input:checked ~ label:hover,
+.rating-stars label:hover ~ input:checked ~ label,
+.rating-stars input:checked ~ label:hover ~ label {
+    color: #cc8f00;
+}
+
+/* Form styles */
+.review-form {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.submit-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 30px;
+}
+
+.btn {
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background-color: #4caf50;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #43a047;
+}
+
+.btn-secondary {
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.btn-secondary:hover {
+    background-color: #e0e0e0;
+}
+
+.btn-danger {
+    background-color: #f44336;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #e53935;
+}
+
+/* Review list styles */
+.review-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.review-card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+.review-product {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.review-content {
+    margin-bottom: 15px;
+}
+
+.review-rating {
+    margin-bottom: 10px;
+}
+
+.review-rating i {
+    color: #ffb400;
+    margin-right: 2px;
+}
+
+.review-rating i.fa-star-o {
+    color: #ddd;
+}
+
+.review-date {
+    color: #757575;
+    font-size: 13px;
+    margin: 0;
+}
+
+.review-comment {
+    margin: 0;
+    line-height: 1.5;
+}
+
+.review-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 13px;
+}
+
+/* Empty state */
+.empty-state {
+    text-align: center;
+    padding: 60px 0;
+}
+
+.empty-icon {
+    font-size: 64px;
+    color: #bdbdbd;
+    margin-bottom: 20px;
+}
+
+.empty-state h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #616161;
+}
+
+.empty-state p {
+    color: #757575;
+    margin-bottom: 20px;
+}
+
+/* Alert styles */
+.alert {
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.alert-success {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+}
+
+.alert-danger {
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid #ffcdd2;
+}
+
+.alert-warning {
+    background-color: #fff8e1;
+    color: #ff8f00;
+    border: 1px solid #ffecb3;
+}
+
+/* Status badge styles */
+.status-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.status-approved {
+    background-color: #28a745;
+    color: white;
+}
+
+.status-pending {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.status-rejected {
+    background-color: #dc3545;
+    color: white;
+}
+
+.review-status {
+    margin-bottom: 8px;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .product-info {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .product-image {
+        margin-right: 0;
+        margin-bottom: 15px;
+    }
+    
+    .submit-group {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+    }
+}
+
+/* === ANIMATIONS & EFFECTS === */
+
+/* Hiệu ứng fade-in cho trang */
+body {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+body.page-loaded {
+    opacity: 1;
+}
+
+/* Hiệu ứng cho rating stars */
+.rating-stars label {
+    transition: all 0.2s ease;
+    transform-origin: center center;
+}
+
+.rating-stars label.star-hover {
+    transform: scale(1.2);
+    text-shadow: 0 0 10px rgba(255, 180, 0, 0.7);
+}
+
+.rating-stars label.star-selected {
+    animation: pulse 0.3s ease;
+}
+
+.rating-text {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #757575;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+}
+
+.rating-text.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Hiệu ứng cho form groups */
+.review-form .form-group {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s ease;
+}
+
+.review-form .form-group.form-group-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Hiệu ứng focus cho textarea */
+.form-group.focused {
+    transform: translateY(-5px);
+}
+
+.form-group.focused textarea {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: #4caf50;
+}
+
+/* Hiệu ứng cho card đánh giá */
+.review-card {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+}
+
+.review-card.card-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.review-card.card-hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Hiệu ứng ripple cho buttons */
+.btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ripple {
+    position: absolute;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.4);
+    transform: scale(0);
+    animation: ripple 0.6s linear;
+    pointer-events: none;
+}
+
+/* Hiệu ứng cho product info */
+.product-info {
+    opacity: 1;
+    transition: all 0.3s ease;
+}
+
+.product-info.animated {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* Keyframes */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+@keyframes ripple {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+@keyframes fadeInUp {
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Hiệu ứng cho empty state */
+.empty-state {
+    transform: scale(0.95);
+    opacity: 0;
+    animation: scaleIn 0.5s 0.3s forwards;
+}
+
+@keyframes scaleIn {
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Hiệu ứng cho alerts */
+.alert {
+    animation: slideInDown 0.5s;
+}
+
+@keyframes slideInDown {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Hiệu ứng khi submit form */
+.review-form.submitting {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.submit-spinner {
+    margin-right: 5px;
+}
+
+/* Hiệu ứng xóa card */
+.review-card.deleting {
+    overflow: hidden;
+    transition: all 0.5s ease;
+}
+
+/* Hiệu ứng pulse animation */
+.animated.pulse {
+    animation: pulse 0.5s;
+}
+
+/* Hiệu ứng cho product-info */
+.product-info.animated {
+    animation: fadeInDown 0.5s;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Hiệu ứng ripple nâng cao */
+.ripple {
+    background-image: radial-gradient(circle, rgba(255,255,255,.35) 0%, rgba(255,255,255,.2) 40%, rgba(255,255,255,.1) 60%, rgba(0,0,0,0) 70%);
+}
+
+/* Hiệu ứng glow cho sao đã chọn */
+.rating-stars input:checked ~ label {
+    text-shadow: 0 0 10px rgba(255, 180, 0, 0.7);
+}
+
+/* Hiệu ứng nút submit */
+.btn-primary {
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.btn-primary:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    transform: translateY(-3px);
+}
+
+.btn-primary:active {
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transform: translateY(0);
+}

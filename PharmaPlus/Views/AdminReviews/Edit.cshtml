@@ -1,0 +1,191 @@
+﻿@model PharmaPlus.Models.AdminReviewEditViewModel
+@{
+    ViewBag.Title = "Chỉnh sửa đánh giá";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    Response.ContentEncoding = System.Text.Encoding.UTF8;
+    Response.Charset = "utf-8";
+}
+
+<div class="admin-review-edit">
+    <div class="back-link">
+        <a href="@Url.Action("Details", new { id = Model.Id })" class="btn btn-link">
+            <i class="fas fa-arrow-left"></i> Quay lại chi tiết
+        </a>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h1 class="card-title">Chỉnh sửa đánh giá #@Model.Id</h1>
+        </div>
+        
+        <div class="card-body">
+            <div class="review-preview mb-4">
+                <div class="preview-header">
+                    <div class="preview-user">
+                        <i class="fas fa-user-circle"></i>
+                        <a href="@Url.Action("Details", "AdminUsers", new { id = Model.UserId })">
+                            @Model.UserName
+                        </a>
+                    </div>
+                    <div class="preview-date">
+                        @(Model.CreatedAt.HasValue ? Model.CreatedAt.Value.ToString("dd/MM/yyyy HH:mm") : "")
+                    </div>
+                </div>
+                <div class="preview-product">
+                    <a href="@Url.Action("Details", "AdminProducts", new { id = Model.ProductId })">
+                        <i class="fas fa-box"></i> @Model.ProductName
+                    </a>
+                </div>
+                <div class="preview-rating">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        if (i <= Model.Rating)
+                        {
+                            <i class="fas fa-star text-warning"></i>
+                        }
+                        else
+                        {
+                            <i class="far fa-star text-secondary"></i>
+                        }
+                    }
+                </div>
+                <div class="preview-comment">
+                    @Model.Comment
+                </div>
+            </div>
+            
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(model => model.Id)
+                
+                <div class="form-horizontal">
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Status, htmlAttributes: new { @class = "control-label" })
+                        <div>
+                            @Html.DropDownListFor(model => model.Status, Model.AvailableStatuses, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Lưu thay đổi
+                        </button>
+                        <a href="@Url.Action("Details", new { id = Model.Id })" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Hủy
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section styles {
+    <style>
+        .admin-review-edit {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .back-link {
+            margin-bottom: 15px;
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0;
+        }
+        
+        .review-preview {
+            background-color: #f8f9fc;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .preview-user {
+            font-weight: 600;
+        }
+        
+        .preview-user i {
+            margin-right: 5px;
+            color: #4e73df;
+        }
+        
+        .preview-date {
+            color: #858796;
+            font-size: 0.9rem;
+        }
+        
+        .preview-product {
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .preview-product i {
+            color: #4e73df;
+        }
+        
+        .preview-rating {
+            margin-bottom: 10px;
+        }
+        
+        .preview-comment {
+            background-color: white;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #e3e6f0;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .control-label {
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .text-danger {
+            color: #e74a3b;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: block;
+        }
+        
+        .form-actions {
+            margin-top: 30px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .custom-control-input:checked ~ .custom-control-label::before {
+            background-color: #4e73df;
+            border-color: #4e73df;
+        }
+        
+        .text-warning {
+            color: #f6c23e !important;
+        }
+        
+        .text-secondary {
+            color: #858796 !important;
+        }
+    </style>
+}
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

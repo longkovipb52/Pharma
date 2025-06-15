@@ -1,0 +1,172 @@
+﻿@model PharmaPlus.Models.Product
+@{
+    ViewBag.Title = "Xóa sản phẩm";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    Response.ContentEncoding = System.Text.Encoding.UTF8;
+    Response.Charset = "utf-8";
+}
+
+<div class="admin-product-delete">
+    <div class="back-link">
+        <a href="@Url.Action("Index")" class="btn btn-link">
+            <i class="fas fa-arrow-left"></i> Quay lại danh sách
+        </a>
+    </div>
+    
+    <div class="card">
+        <div class="card-header bg-danger text-white">
+            <h1 class="card-title"><i class="fas fa-exclamation-triangle"></i> Xác nhận xóa sản phẩm</h1>
+        </div>
+        
+        <div class="card-body">
+            <div class="alert alert-danger">
+                <p><strong>Cảnh báo:</strong> Bạn đang chuẩn bị xóa sản phẩm này. Hành động này không thể hoàn tác.</p>
+            </div>
+            
+            <div class="product-info">
+                <div class="row">
+                    <div class="col-md-3">
+                        @if (!string.IsNullOrEmpty(Model.image_url))
+                        {
+                            <img src="@Url.Content("~/images/products/" + Model.image_url)" alt="@Model.name" class="product-image" />
+                        }
+                        else
+                        {
+                            <div class="no-image">
+                                <i class="fas fa-image"></i>
+                                <p>Không có hình ảnh</p>
+                            </div>
+                        }
+                    </div>
+                    <div class="col-md-9">
+                        <h2 class="product-name">@Model.name</h2>
+                        
+                        <div class="product-meta">
+                            <div class="meta-item">
+                                <span class="meta-label">Danh mục:</span>
+                                <span class="meta-value">@(Model.Category != null ? Model.Category.name : "Không có")</span>
+                            </div>
+                            
+                            <div class="meta-item">
+                                <span class="meta-label">Giá:</span>
+                                <span class="meta-value price">@String.Format("{0:#,##0}", Model.price) VNĐ</span>
+                            </div>
+                            
+                            <div class="meta-item">
+                                <span class="meta-label">Tồn kho:</span>
+                                <span class="meta-value">@Model.stock</span>
+                            </div>
+                            
+                            <div class="meta-item">
+                                <span class="meta-label">Ngày tạo:</span>
+                                <span class="meta-value">@(Model.created_at.HasValue ? Model.created_at.Value.ToString("dd/MM/yyyy HH:mm") : "")</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="delete-actions">
+                @using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()
+                    
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Xác nhận xóa
+                    </button>
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Hủy bỏ
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section styles {
+    <style>
+        .admin-product-delete {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .back-link {
+            margin-bottom: 15px;
+        }
+        
+        .product-image {
+            max-width: 100%;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .no-image {
+            width: 100%;
+            height: 200px;
+            background: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #aaa;
+            border-radius: 5px;
+        }
+        
+        .no-image i {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        
+        .product-name {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        
+        .product-meta {
+            margin-bottom: 20px;
+        }
+        
+        .meta-item {
+            margin-bottom: 10px;
+        }
+        
+        .meta-label {
+            font-weight: 600;
+            display: inline-block;
+            width: 150px;
+        }
+        
+        .meta-value {
+            display: inline-block;
+        }
+        
+        .meta-value.price {
+            font-weight: 700;
+            color: var(--danger);
+            font-size: 1.2rem;
+        }
+        
+        .delete-actions {
+            margin-top: 30px;
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .delete-actions button, .delete-actions a {
+            margin: 0 5px;
+            min-width: 150px;
+        }
+        
+        .alert-danger {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+    </style>
+}
