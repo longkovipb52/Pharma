@@ -1,0 +1,25 @@
+# Image ASP.NET Runtime để chạy ứng dụng
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+WORKDIR /app
+EXPOSE 80
+
+# Image SDK để build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Copy toàn bộ mã nguồn vào image
+COPY . .
+
+# Restore các package
+RUN dotnet restore
+
+# Build và publish
+RUN dotnet publish -c Release -o /app/publish
+
+# Giai đoạn cuối: copy app đã build sang image chạy
+FROM base AS final
+WORKDIR /app
+COPY --from=build /app/publish .
+
+# File DLL chạy chính (đổi nếu project tên khác)
+ENTRYPOINT ["dotnet", "Pharma.dll"]
